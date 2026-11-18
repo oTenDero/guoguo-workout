@@ -1,0 +1,20 @@
+{
+  "name": "果果約會集點 × 10分鐘運動",
+  "short_name": "約會集點",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#16161e",
+  "theme_color": "#16161e",
+  "icons": [
+    {
+      "src": "https://em-content.zobj.net/source/apple/391/red-heart_2764-fe0f.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://em-content.zobj.net/source/apple/391/red-heart_2764-fe0f.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
