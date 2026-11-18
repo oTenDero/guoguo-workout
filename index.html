@@ -28,7 +28,7 @@
     body {
       margin: 0; background: var(--bg); color: var(--text);
       display: flex; flex-direction: column; align-items: center;
-      min-height: 100vh; padding: 10px 12px 92px;
+      min-height: 100vh; padding: 10px 12px 94px;
       overflow-x: hidden;
     }
     .container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 11px; }
@@ -43,7 +43,7 @@
     }
     .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 9px; gap: 6px; }
     h1 { font-size: 1.02rem; margin: 0; display: flex; align-items: center; gap: 5px; }
-    .badge { font-size: 0.75rem; background: rgba(57,197,187,0.18); color: var(--miku); padding: 4px 9px; border-radius: 99px; font-weight: 700; white-space: nowrap; }
+    .badge { font-size: 0.74rem; background: rgba(57,197,187,0.18); color: var(--miku); padding: 4px 9px; border-radius: 99px; font-weight: 700; white-space: nowrap; }
     .badge.pink { background: rgba(255,117,151,0.18); color: var(--accent); }
     .badge.gold { background: rgba(251,191,36,0.18); color: var(--gold); }
     .badge.gem { background: rgba(56,189,248,0.18); color: var(--gem); }
@@ -75,15 +75,15 @@
     }
     .stage-header {
       display: flex; justify-content: space-between; align-items: center;
-      position: relative; z-index: 4; margin-bottom: 4px; gap: 6px;
+      position: relative; z-index: 5; margin-bottom: 4px; gap: 4px; flex-wrap: wrap;
     }
     .stage-pill {
       background: rgba(0,0,0,0.48); border: 1px solid rgba(255,255,255,0.12);
-      padding: 4px 10px; border-radius: 99px; font-size: 0.76rem; font-weight: 700;
+      padding: 4px 9px; border-radius: 99px; font-size: 0.74rem; font-weight: 700;
     }
     .boss-btn {
       background: linear-gradient(135deg, #f43f5e, #fb923c); color: #fff;
-      border: none; border-radius: 99px; padding: 4px 11px; font-size: 0.74rem; font-weight: 800;
+      border: none; border-radius: 99px; padding: 4px 10px; font-size: 0.72rem; font-weight: 800;
       cursor: pointer; animation: pulse 1.5s infinite;
     }
     .boss-btn.locked-boss {
@@ -92,15 +92,14 @@
     @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
 
     .battle-field {
-      position: relative; height: 215px; display: flex; justify-content: space-between;
-      align-items: flex-end; padding: 0 8px 14px; z-index: 2;
+      position: relative; height: 220px; display: flex; justify-content: space-between;
+      align-items: flex-end; padding: 0 6px 14px; z-index: 2;
     }
     .stage-floor {
       position: absolute; bottom: 6px; left: 4%; width: 92%; height: 26px;
       background: radial-gradient(ellipse at center, rgba(57,197,187,0.34) 0%, transparent 72%);
       border-radius: 50%; z-index: 1;
     }
-    /* 背景音符粒子 */
     .bg-note {
       position: absolute; color: rgba(126, 249, 240, 0.18); font-size: 1.2rem;
       animation: floatNote 4s linear infinite; pointer-events: none; z-index: 1;
@@ -110,6 +109,17 @@
       30% { opacity: 0.4; }
       100% { transform: translateY(-160px) rotate(25deg); opacity: 0; }
     }
+
+    /* 台詞小氣泡 */
+    .speech-bubble {
+      position: absolute; top: 8px; background: rgba(15, 23, 42, 0.86);
+      border: 1px solid rgba(57, 197, 187, 0.45); color: #f8fafc;
+      font-size: 0.68rem; font-weight: 700; padding: 4px 9px; border-radius: 12px;
+      max-width: 145px; text-align: center; z-index: 6; pointer-events: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.45); transition: opacity 0.3s;
+    }
+    .speech-bubble.miku-say { left: 10px; border-color: var(--miku); color: var(--miku-light); }
+    .speech-bubble.meme-say { right: 10px; border-color: var(--gold); color: #fef08a; }
 
     /* 初音角色容器 */
     .miku-wrapper {
@@ -149,19 +159,19 @@
 
     /* 怪物區 */
     .monster-wrapper {
-      width: 132px; display: flex; flex-direction: column; align-items: center; z-index: 3;
+      width: 138px; display: flex; flex-direction: column; align-items: center; z-index: 3;
     }
-    .monster-name { font-size: 0.74rem; font-weight: 800; color: #f8fafc; margin-bottom: 4px; text-shadow: 0 1px 4px #000; text-align: center; }
+    .monster-name { font-size: 0.73rem; font-weight: 800; color: #f8fafc; margin-bottom: 3px; text-shadow: 0 1px 4px #000; text-align: center; }
     .hp-bar-bg {
       width: 100%; height: 8px; background: rgba(0,0,0,0.65); border-radius: 99px;
-      overflow: hidden; border: 1px solid rgba(255,255,255,0.16); margin-bottom: 4px;
+      overflow: hidden; border: 1px solid rgba(255,255,255,0.16); margin-bottom: 3px;
     }
     .hp-bar-fill { height: 100%; background: linear-gradient(90deg, #ef4444, #f97316); width: 100%; transition: width 0.1s; }
     .monster-svg-box {
-      width: 104px; height: 104px; display: flex; align-items: center; justify-content: center;
+      width: 110px; height: 110px; display: flex; align-items: center; justify-content: center;
       animation: monsterFloat 2s ease-in-out infinite;
     }
-    .monster-svg-box.hit { animation: monsterHit 0.16s ease; filter: brightness(2.3); }
+    .monster-svg-box.hit { animation: monsterHit 0.16s ease; filter: brightness(1.8); }
     @keyframes monsterFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
     @keyframes monsterHit {
       0% { transform: translateX(0); }
@@ -179,7 +189,6 @@
     .dmg-pop.crit { color: var(--gold); font-size: 1.25rem; }
     .dmg-pop.skill { color: var(--miku-light); font-size: 1.32rem; }
     .dmg-pop.cheer { color: var(--accent); font-size: 0.92rem; }
-    .dmg-pop.shield { color: #94a3b8; font-size: 0.85rem; }
     @keyframes floatUp {
       0% { opacity: 1; transform: translateY(0) scale(0.85); }
       25% { transform: translateY(-14px) scale(1.1); }
@@ -261,7 +270,7 @@
 
     /* ================= 音律節拍小遊戲 ================= */
     .rhythm-board {
-      position: relative; height: 290px; background: #0d101b;
+      position: relative; height: 280px; background: #0d101b;
       border-radius: 18px; border: 2px solid rgba(57,197,187,0.35);
       overflow: hidden; display: grid; grid-template-columns: repeat(3, 1fr);
       user-select: none;
@@ -296,8 +305,8 @@
     /* ================= 健身與約會集點樣式 ================= */
     .level-bar {
       background: var(--card-sub); border-radius: 12px; padding: 8px 12px;
-      font-size: 0.79rem; display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 10px; color: var(--gold);
+      font-size: 0.78rem; display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px; color: var(--gold); flex-wrap: wrap; gap: 4px;
     }
     .hearts-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 10px 0; }
     .heart-slot {
@@ -363,6 +372,25 @@
     }
     textarea { min-height: 90px; resize: vertical; line-height: 1.4; }
 
+    /* ================= 底部自動消失 Toast 系統 ================= */
+    .toast-container {
+      position: fixed; bottom: 84px; left: 50%; transform: translateX(-50%);
+      width: 92%; max-width: 420px; display: flex; flex-direction: column; gap: 6px;
+      align-items: center; pointer-events: none; z-index: 200;
+    }
+    .toast-msg {
+      background: rgba(22, 26, 42, 0.94); backdrop-filter: blur(10px);
+      border: 1px solid var(--miku); color: #f8fafc;
+      padding: 10px 15px; border-radius: 14px; font-size: 0.82rem; font-weight: 700;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.55); text-align: center; line-height: 1.4;
+      animation: toastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .toast-msg.warn { border-color: var(--accent); color: #ffe4e6; }
+    .toast-msg.gold { border-color: var(--gold); color: #fef08a; }
+    .toast-msg.fade-out { animation: toastOut 0.35s ease forwards; }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(14px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes toastOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(8px); } }
+
     /* ================= 底部四頁籤導覽列 ================= */
     .bottom-nav {
       position: fixed; bottom: 0; left: 0; right: 0;
@@ -381,17 +409,24 @@
     .nav-btn.active.pink-tab { background: rgba(255, 117, 151, 0.16); color: var(--accent); }
     .nav-icon { font-size: 1.2rem; }
 
-    /* 升級祝賀彈窗 */
+    /* 彈窗 (僅用於重大升級慶祝與迷因圖鑑) */
     .modal-overlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
-      display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.82); backdrop-filter: blur(5px);
+      display: none; align-items: center; justify-content: center; z-index: 150; padding: 16px;
     }
     .modal-overlay.show { display: flex; }
     .modal-box {
       background: var(--card); border: 2px solid var(--miku); border-radius: 24px;
-      padding: 22px; max-width: 360px; width: 100%; text-align: center;
+      padding: 20px; max-width: 390px; width: 100%; text-align: center;
       box-shadow: 0 0 38px rgba(57, 197, 187, 0.45); animation: pop 0.35s ease;
+      max-height: 82vh; overflow-y: auto;
     }
+    .bestiary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; text-align: center; }
+    .bestiary-item {
+      background: var(--card-sub); border-radius: 12px; padding: 8px 4px;
+      border: 1px solid rgba(255,255,255,0.08); font-size: 0.72rem;
+    }
+    .bestiary-item.locked { opacity: 0.4; }
   </style>
 </head>
 <body>
@@ -424,9 +459,11 @@
         <span class="bg-note" style="left:78%; animation-delay:2.6s;">♬</span>
 
         <div class="stage-header">
-          <div class="stage-pill" id="stageLabel">第 1 關・音律草原</div>
-          <div style="display:flex; gap:5px; align-items:center;">
-            <button class="btn-small btn-secondary" style="padding:3px 8px; font-size:0.68rem;" onclick="triggerAvatarUpload(event)">🖼️ 換自訂圖</button>
+          <div class="stage-pill" id="stageLabel">第 1 關</div>
+          <div style="display:flex; gap:4px; align-items:center; flex-wrap:wrap;">
+            <button class="btn-small btn-secondary" style="padding:3px 7px; font-size:0.67rem;" onclick="openBestiary(event)">📖 圖鑑</button>
+            <button class="btn-small btn-secondary" style="padding:3px 7px; font-size:0.67rem;" onclick="triggerAvatarUpload(event)">🖼️ 換圖</button>
+            <button class="btn-small btn-secondary" id="toggleAvatarBtn" style="padding:3px 7px; font-size:0.67rem; display:none;" onclick="toggleAvatarMode(event)">🔄 切回手繪</button>
             <input type="file" id="avatarUploadInput" accept="image/*" style="display:none;" onchange="handleAvatarFile(event)" />
             <div id="bossControlArea">
               <span class="badge" id="dpsLabel">DPS 15/秒</span>
@@ -437,7 +474,11 @@
         <div class="battle-field">
           <div class="stage-floor"></div>
 
-          <!-- 解鎖汗水天賦後出現的可愛黑貓使魔 -->
+          <!-- 角色與迷因怪可愛台詞氣泡 -->
+          <div class="speech-bubble miku-say" id="mikuBubble">為了果果約會衝呀！♪</div>
+          <div class="speech-bubble meme-say" id="memeBubble">Such 懶惰, Very 躺平</div>
+
+          <!-- 解鎖汗水天賦後出現的黑貓使魔 -->
           <div class="cat-familiar" id="catFamiliarBox" style="display:none;" title="黑貓音律使魔">
             <svg viewBox="0 0 60 60" width="44" height="44">
               <polygon points="14,24 18,8 28,20" fill="#1e293b" />
@@ -451,7 +492,7 @@
             </svg>
           </div>
 
-          <!-- 超萌 Q 版精修初音未來 (支援一鍵切換自訂圖片/GIF) -->
+          <!-- 初音角色區 (支援一鍵切換自訂圖片 / 手繪初音) -->
           <div class="miku-wrapper" id="mikuSprite">
             <img id="customMikuImg" class="custom-miku-img" style="display:none;" alt="Miku" />
             <svg id="defaultMikuSvg" viewBox="0 0 200 220" width="155" height="185">
@@ -460,10 +501,6 @@
                   <stop offset="0%" stop-color="#67f3e8" />
                   <stop offset="50%" stop-color="#2dd4bf" />
                   <stop offset="100%" stop-color="#0f766e" />
-                </linearGradient>
-                <linearGradient id="mikuHairTip" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#39c5bb" />
-                  <stop offset="100%" stop-color="#38bdf8" />
                 </linearGradient>
                 <linearGradient id="mikuEyeGrad" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stop-color="#0f172a" />
@@ -476,22 +513,17 @@
                 </linearGradient>
               </defs>
 
-              <!-- 轉職光環/全息羽翼 -->
               <g id="mikuJobAura"></g>
 
-              <!-- 飄逸大雙馬尾 (左) -->
               <g class="twintail-l">
                 <path d="M72 58 C34 62, 16 118, 22 184 C36 174, 44 142, 54 102 C60 82, 66 70, 74 64 Z" fill="url(#mikuHairMain)" />
                 <path d="M68 62 C42 74, 30 118, 33 166" stroke="#a5f3fc" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7" />
               </g>
-
-              <!-- 飄逸大雙馬尾 (右) -->
               <g class="twintail-r">
                 <path d="M128 58 C166 62, 184 118, 178 184 C164 174, 156 142, 146 102 C140 82, 134 70, 126 64 Z" fill="url(#mikuHairMain)" />
                 <path d="M132 62 C158 74, 170 118, 167 166" stroke="#a5f3fc" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7" />
               </g>
 
-              <!-- 可愛俏皮雙腿與過膝靴 -->
               <rect x="83" y="156" width="11" height="48" rx="5.5" fill="#ffece2" />
               <g transform="rotate(-8 112 165)">
                 <rect x="106" y="154" width="11" height="46" rx="5.5" fill="#ffece2" />
@@ -501,65 +533,50 @@
               <path d="M82 172 L95 172 L95 206 L80 206 Z" fill="#1e293b" />
               <rect x="82" y="172" width="13" height="3.5" fill="#39c5bb" />
 
-              <!-- 蓬蓬百褶裙 -->
               <path d="M76 136 L124 136 L135 162 L65 162 Z" fill="#1e293b" />
               <path d="M66 158 L134 158 L135 162 L65 162 Z" fill="#39c5bb" />
               <line x1="87" y1="136" x2="83" y2="162" stroke="#0f172a" stroke-width="1.8" />
               <line x1="100" y1="136" x2="100" y2="162" stroke="#0f172a" stroke-width="1.8" />
               <line x1="113" y1="136" x2="117" y2="162" stroke="#0f172a" stroke-width="1.8" />
 
-              <!-- 歌姬上衣與蒼藍領帶 -->
               <path d="M80 102 L120 102 L124 137 L76 137 Z" fill="#f1f5f9" />
               <path d="M80 102 L92 102 L100 113 L108 102 L120 102 L117 118 L83 118 Z" fill="#cbd5e1" />
               <polygon points="100,108 95,116 97,134 100,138 103,134 105,116" fill="#39c5bb" />
               <rect x="97.5" y="118" width="5" height="2" fill="#0f172a" />
 
-              <!-- 左手可愛揮舞姿勢 -->
               <path d="M79 105 L60 128 L68 133 L83 114 Z" fill="#1e293b" />
               <line x1="63" y1="125" x2="69" y2="129" stroke="#39c5bb" stroke-width="2" />
               <circle cx="63" cy="131" r="5" fill="#ffece2" />
 
-              <!-- Q版圓潤臉龐 -->
               <path d="M68 66 C68 42, 132 42, 132 66 C132 88, 118 99, 100 99 C82 99, 68 88, 68 66 Z" fill="#ffece2" />
-
-              <!-- 軟萌腮紅 -->
               <ellipse cx="81" cy="80" rx="6" ry="3.2" fill="#ff7597" opacity="0.55" />
               <ellipse cx="119" cy="80" rx="6" ry="3.2" fill="#ff7597" opacity="0.55" />
 
-              <!-- 超水靈大眼睛 (左) -->
               <ellipse cx="85" cy="71" rx="6.8" ry="8.2" fill="url(#mikuEyeGrad)" />
               <path d="M77 67 Q85 60 93 67" stroke="#0f172a" stroke-width="2.8" fill="none" stroke-linecap="round" />
               <ellipse cx="85" cy="75" rx="4.2" ry="2.5" fill="#7ef9f0" opacity="0.7" />
               <circle cx="82.5" cy="67.5" r="2.6" fill="#ffffff" />
               <circle cx="88" cy="73.5" r="1.2" fill="#ffffff" />
 
-              <!-- 超水靈大眼睛 (右) -->
               <ellipse cx="115" cy="71" rx="6.8" ry="8.2" fill="url(#mikuEyeGrad)" />
               <path d="M107 67 Q115 60 123 67" stroke="#0f172a" stroke-width="2.8" fill="none" stroke-linecap="round" />
               <ellipse cx="115" cy="75" rx="4.2" ry="2.5" fill="#7ef9f0" opacity="0.7" />
               <circle cx="112.5" cy="67.5" r="2.6" fill="#ffffff" />
               <circle cx="118" cy="73.5" r="1.2" fill="#ffffff" />
 
-              <!-- 可愛貓咪微笑嘴 -->
               <path d="M95 85 Q97.5 88.5 100 86 Q102.5 88.5 105 85" stroke="#e11d48" stroke-width="2" fill="none" stroke-linecap="round" />
 
-              <!-- 蓬鬆層次瀏海與側鬢髮 -->
               <path d="M67 66 C66 36, 134 36, 133 66 C127 54, 121 53, 117 65 C112 52, 107 52, 103 66 C99 51, 94 51, 90 66 C85 52, 79 53, 75 65 C71 54, 68 56, 67 66 Z" fill="url(#mikuHairMain)" />
-              <!-- 動漫天使光環頭髮高光 -->
               <path d="M77 48 Q100 43 123 48" stroke="#ccfbf1" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0.75" />
-              <!-- 側髮修飾臉型 -->
               <path d="M67 60 C64 78, 67 94, 73 102 C74 88, 74 74, 75 62 Z" fill="url(#mikuHairMain)" />
               <path d="M133 60 C136 78, 133 94, 127 102 C126 88, 126 74, 125 62 Z" fill="url(#mikuHairMain)" />
 
-              <!-- 招牌黑底粉框髮飾 -->
               <rect x="64" y="46" width="11" height="15" rx="2.5" transform="rotate(-18 64 46)" fill="#0f172a" stroke="#ff2a85" stroke-width="2" />
               <rect x="124" y="43" width="11" height="15" rx="2.5" transform="rotate(18 124 43)" fill="#0f172a" stroke="#ff2a85" stroke-width="2" />
 
-              <!-- 耳機與細麥克風 -->
               <rect x="62" y="65" width="6" height="14" rx="3" fill="#1e293b" stroke="#39c5bb" stroke-width="1.3" />
               <path d="M65 78 Q77 86 90 85" stroke="#39c5bb" stroke-width="1.5" fill="none" />
 
-              <!-- 右手與動態武器 -->
               <path d="M120 105 L140 124 L133 130 L116 114 Z" fill="#1e293b" />
               <line x1="131" y1="126" x2="137" y2="121" stroke="#39c5bb" stroke-width="2" />
               <circle cx="138" cy="127" r="5" fill="#ffece2" />
@@ -567,9 +584,9 @@
             </svg>
           </div>
 
-          <!-- 怪物 SVG 與血條 -->
+          <!-- 網路迷因怪物與血條 -->
           <div class="monster-wrapper">
-            <div class="monster-name" id="monsterName">走音史萊姆</div>
+            <div class="monster-name" id="monsterName">肌肉柴犬 Doge</div>
             <div class="hp-bar-bg">
               <div class="hp-bar-fill" id="monsterHpBar"></div>
             </div>
@@ -604,10 +621,10 @@
       <!-- 運動突破瓶頸提示卡 -->
       <div class="card workout-link-card">
         <div style="flex:1;">
-          <div style="font-size: 0.85rem; font-weight: 800; color: var(--miku);" id="levelRuleStatus">
+          <div style="font-size: 0.84rem; font-weight: 800; color: var(--miku);" id="levelRuleStatus">
             🌱 今日尚未運動：完成一次運動立即升至 Lv.2！
           </div>
-          <div style="font-size: 0.73rem; color: var(--muted); margin-top: 3px;" id="nextUnlockHint">
+          <div style="font-size: 0.72rem; color: var(--muted); margin-top: 3px;" id="nextUnlockHint">
             突破收益：訓練上限 +10、獲得 💎3 汗水星鑽、擊碎下一個惰性結界！
           </div>
         </div>
@@ -641,7 +658,16 @@
         <div class="constellation-grid" id="constellationGrid"></div>
       </div>
 
-      <!-- 3. 音律基礎訓練 (受運動等級上限約束) -->
+      <!-- 3. 每日應援小懸賞 -->
+      <div class="card">
+        <div class="header-row">
+          <h1>📋 每日應援懸賞（06:00 重置）</h1>
+          <span class="badge gold" id="bountyCountBadge">0 / 3 完成</span>
+        </div>
+        <div id="bountyList"></div>
+      </div>
+
+      <!-- 4. 音律基礎訓練 (受運動等級上限約束) -->
       <div class="card">
         <div class="header-row">
           <h1>🎵 音律基礎訓練（上限 Lv.<span id="trainCapBadge">10</span>）</h1>
@@ -650,7 +676,7 @@
         <div id="trainingList"></div>
       </div>
 
-      <!-- 4. 運動等級轉職殿堂 -->
+      <!-- 5. 運動等級轉職殿堂 -->
       <div class="card">
         <div class="header-row">
           <h1>👑 運動等級轉職殿堂</h1>
@@ -704,12 +730,12 @@
         </div>
         <div class="level-bar">
           <span id="rankTitle">稱號：Lv.1 剛離開電腦椅的勇者 🌱</span>
-          <span id="totalLifetime">生涯累計：0 次</span>
+          <span id="streakBadge">🔥 週節奏連勝：0 次</span>
         </div>
         <div class="hearts-grid" id="heartsGrid"></div>
         <div class="unlock-banner" id="unlockBanner">🎉 集滿目標啦！快去跟果果提出約會吧！</div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-          <span style="font-size: 0.77rem; color: var(--muted);">排程：六、日、二、三</span>
+          <span style="font-size: 0.77rem; color: var(--muted);">排程：六、日、二、三（3天內運動皆續連勝）</span>
           <div style="display: flex; gap: 6px;">
             <button class="btn-secondary btn-small" onclick="adjustCount(-1)">-1</button>
             <button class="btn-secondary btn-small" onclick="adjustCount(1)">+1</button>
@@ -747,7 +773,7 @@
       <!-- 3. 打卡紀錄 & 自訂設定 -->
       <div class="card">
         <div class="header-row" style="margin-bottom: 0;">
-          <h1>📅 運動打卡紀錄</h1>
+          <h1>📅 運動打卡紀錄（累計 <span id="totalLifetimeNum">0</span> 次）</h1>
           <button class="btn-secondary btn-small" onclick="toggleSettings()">⚙️ 自訂設定</button>
         </div>
         <div class="log-list" id="logList"></div>
@@ -783,12 +809,15 @@
           <button class="act-btn btn-primary" onclick="saveSettings()">💾 儲存自訂設定</button>
           <div style="display:flex; gap:8px;">
             <button class="act-btn btn-miku" onclick="simulateWorkoutComplete()">🧪 測試完成運動（檢視升級）</button>
-            <button class="act-btn btn-secondary" onclick="clearCustomAvatar()">🗑️ 還原預設初音圖</button>
+            <button class="act-btn btn-secondary" onclick="exportBackup()">📤 匯出存檔備份</button>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- 底部自動消失 Toast 容器 -->
+  <div class="toast-container" id="toastContainer"></div>
 
   <!-- 底部四頁籤導覽 -->
   <nav class="bottom-nav">
@@ -812,7 +841,7 @@
     </div>
   </nav>
 
-  <!-- 運動升級祝賀彈窗 -->
+  <!-- 運動升級祝賀彈窗 (重大突破才顯示) -->
   <div class="modal-overlay" id="levelUpModal">
     <div class="modal-box">
       <div style="font-size: 2.5rem; margin-bottom: 6px;">🎉💎👑</div>
@@ -822,7 +851,37 @@
     </div>
   </div>
 
+  <!-- 迷因怪物圖鑑彈窗 -->
+  <div class="modal-overlay" id="bestiaryModal" onclick="if(event.target===this) closeBestiary()">
+    <div class="modal-box">
+      <h2 style="margin: 0 0 4px; color: var(--gold); font-size: 1.15rem;">📖 網路迷因怪物圖鑑</h2>
+      <div style="font-size:0.75rem; color:var(--muted);" id="bestiaryBonusText">已收錄 0 / 16 種迷因（全屬性 +0%）</div>
+      <div class="bestiary-grid" id="bestiaryGrid"></div>
+      <button class="act-btn btn-secondary" style="width: 100%;" onclick="closeBestiary()">關閉圖鑑</button>
+    </div>
+  </div>
+
   <script>
+    /* =========================================================================
+       0. 底部自動消失 Toast 系統 (取代繁瑣的 alert)
+       ========================================================================= */
+    function showToast(msg, type = 'info', duration = 2800) {
+      const container = document.getElementById('toastContainer');
+      const el = document.createElement('div');
+      el.className = 'toast-msg ' + (type === 'warn' ? 'warn' : (type === 'gold' ? 'gold' : ''));
+      el.innerHTML = msg;
+      container.appendChild(el);
+
+      while (container.children.length > 3) {
+        container.removeChild(container.firstChild);
+      }
+
+      setTimeout(() => {
+        el.classList.add('fade-out');
+        setTimeout(() => el.remove(), 360);
+      }, duration);
+    }
+
     /* =========================================================================
        1. 核心資料與儲存狀態 (相容舊版 localStorage)
        ========================================================================= */
@@ -856,7 +915,6 @@
     let logs = JSON.parse(localStorage.getItem('guoguo_logs') || '[]');
     let isLazyMode = false;
 
-    // 每日早上 06:00 換日線計算
     function getFitnessDayKey(dateObj = new Date()) {
       const shifted = new Date(dateObj.getTime() - 6 * 60 * 60 * 1000);
       const y = shifted.getFullYear();
@@ -868,17 +926,23 @@
     const DEFAULT_RPG = {
       level: 1,
       lastLevelUpDayKey: "",
+      lastWorkoutTs: 0,
+      streakCount: 0,
       gold: 90,
-      sweatGems: 0, // 運動專屬貨幣
+      sweatGems: 0,
       stage: 1,
       maxStage: 1,
       fightingBoss: false,
       bossTimer: 30,
       dopamineEndTime: 0,
-      rhythmBonusPct: 0, // 小遊戲累積的永久戰力百分比
+      rhythmBonusPct: 0,
       stamina: 3,
       lastStaminaTime: Date.now(),
       lastSaveTime: Date.now(),
+      seenMemes: {},
+      bountyDayKey: "",
+      bountyProgress: { cheer: 0, forge: 0, rhythm: 0 },
+      bountyClaimed: { cheer: false, forge: false, rhythm: false },
       training: { atk: 0, crit: 0, cdmg: 0, gold: 0 },
       talents: { blackCat: 0, doubleHit: 0, autoCheer: 0, gemEcho: 0 },
       equip: {
@@ -892,8 +956,20 @@
     let rpg = Object.assign({}, DEFAULT_RPG, savedRaw);
     rpg.training = Object.assign({}, DEFAULT_RPG.training, rpg.training);
     rpg.talents = Object.assign({}, DEFAULT_RPG.talents, rpg.talents);
+    rpg.seenMemes = Object.assign({}, rpg.seenMemes);
+    rpg.bountyProgress = Object.assign({}, DEFAULT_RPG.bountyProgress, rpg.bountyProgress);
+    rpg.bountyClaimed = Object.assign({}, DEFAULT_RPG.bountyClaimed, rpg.bountyClaimed);
     for (const k of ['weapon', 'outfit', 'acc']) {
       rpg.equip[k] = Object.assign({}, DEFAULT_RPG.equip[k], rpg.equip[k]);
+    }
+
+    function ensureDailyBounties() {
+      const today = getFitnessDayKey();
+      if (rpg.bountyDayKey !== today) {
+        rpg.bountyDayKey = today;
+        rpg.bountyProgress = { cheer: 0, forge: 0, rhythm: 0 };
+        rpg.bountyClaimed = { cheer: false, forge: false, rhythm: false };
+      }
     }
 
     function saveRpg() {
@@ -902,17 +978,29 @@
     }
 
     /* =========================================================================
-       2. 自訂初音圖片/GIF 支援
+       2. 雙向一鍵切換「手繪初音 ↔ 自訂美圖」
        ========================================================================= */
     function loadCustomAvatar() {
       const dataUrl = localStorage.getItem('miku_custom_avatar');
+      const useCustom = localStorage.getItem('miku_use_custom') !== '0';
       const imgEl = document.getElementById('customMikuImg');
       const svgEl = document.getElementById('defaultMikuSvg');
+      const toggleBtn = document.getElementById('toggleAvatarBtn');
+
       if (dataUrl) {
-        imgEl.src = dataUrl;
-        imgEl.style.display = 'block';
-        svgEl.style.display = 'none';
+        toggleBtn.style.display = 'inline-block';
+        if (useCustom) {
+          imgEl.src = dataUrl;
+          imgEl.style.display = 'block';
+          svgEl.style.display = 'none';
+          toggleBtn.textContent = '🔄 切回手繪';
+        } else {
+          imgEl.style.display = 'none';
+          svgEl.style.display = 'block';
+          toggleBtn.textContent = '✨ 切回美圖';
+        }
       } else {
+        toggleBtn.style.display = 'none';
         imgEl.style.display = 'none';
         svgEl.style.display = 'block';
       }
@@ -923,29 +1011,220 @@
       document.getElementById('avatarUploadInput').click();
     }
 
+    function toggleAvatarMode(e) {
+      e.stopPropagation();
+      const currentlyUsingCustom = localStorage.getItem('miku_use_custom') !== '0';
+      localStorage.setItem('miku_use_custom', currentlyUsingCustom ? '0' : '1');
+      loadCustomAvatar();
+      showToast(currentlyUsingCustom ? '🎨 已切回手繪Q版初音！' : '✨ 已切回你的自訂美圖！');
+    }
+
     function handleAvatarFile(e) {
       const file = e.target.files[0];
       if (!file) return;
       if (file.size > 2.5 * 1024 * 1024) {
-        return alert('圖片檔案太大囉（請選 2.5MB 以內的 PNG/JPG/GIF）！');
+        return showToast('⚠️ 圖片檔案太大囉（請選 2.5MB 以內的圖）', 'warn');
       }
       const reader = new FileReader();
       reader.onload = function(ev) {
         localStorage.setItem('miku_custom_avatar', ev.target.result);
+        localStorage.setItem('miku_use_custom', '1');
         loadCustomAvatar();
-        spawnPopText("✨ 已換上你的專屬初音美圖！", "skill");
+        showToast('✨ 已換上新美圖！隨時可點「🔄 切回手繪」切換喔');
       };
       reader.readAsDataURL(file);
     }
 
-    function clearCustomAvatar() {
-      localStorage.removeItem('miku_custom_avatar');
-      loadCustomAvatar();
-      alert('✅ 已還原為內建 Q 版初音！');
-    }
+    /* =========================================================================
+       3. 16 種無害搞笑「網路迷因怪物圖鑑」
+       ========================================================================= */
+    const MEME_MONSTERS = [
+      {
+        id: "doge", name: "神煩柴犬 Doge", quote: "Such 懶惰, Very 躺平, Wow", isBoss: false,
+        svg: () => `<svg viewBox="0 0 100 100" width="92" height="92">
+          <polygon points="22,38 26,12 42,28" fill="#d97706"/><polygon points="78,38 74,12 58,28" fill="#d97706"/>
+          <circle cx="50" cy="54" r="32" fill="#f59e0b"/><ellipse cx="50" cy="63" rx="22" ry="17" fill="#fef3c7"/>
+          <circle cx="38" cy="48" r="5" fill="#fff"/><circle cx="36" cy="48" r="3" fill="#0f172a"/>
+          <circle cx="62" cy="48" r="5" fill="#fff"/><circle cx="60" cy="48" r="3" fill="#0f172a"/>
+          <ellipse cx="50" cy="58" rx="5" ry="3.5" fill="#1e293b"/>
+          <path d="M41 66 Q50 72 59 66" stroke="#1e293b" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <text x="6" y="24" fill="#38bdf8" font-size="10" font-weight="900">WOW</text>
+        </svg>`
+      },
+      {
+        id: "popcat", name: "波波貓 Pop Cat", quote: "波！波！波！O口O", isBoss: false,
+        svg: (hit) => `<svg viewBox="0 0 100 100" width="92" height="92">
+          <polygon points="20,42 22,14 40,30" fill="#f8fafc"/><polygon points="80,42 78,14 60,30" fill="#f8fafc"/>
+          <circle cx="50" cy="56" r="32" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+          <circle cx="37" cy="47" r="4.5" fill="#0f172a"/><circle cx="63" cy="47" r="4.5" fill="#0f172a"/>
+          ${hit
+            ? '<ellipse cx="50" cy="67" rx="11" ry="13" fill="#e11d48" stroke="#0f172a" stroke-width="2"/>'
+            : '<path d="M42 61 Q46 65 50 61 Q54 65 58 61" stroke="#0f172a" stroke-width="2.5" fill="none" stroke-linecap="round"/>'}
+        </svg>`
+      },
+      {
+        id: "pepe", name: "悲傷蛙 Pepe", quote: "Feels Lazy Man... 不想動", isBoss: false,
+        svg: () => `<svg viewBox="0 0 100 100" width="92" height="92">
+          <ellipse cx="50" cy="58" rx="34" ry="26" fill="#4d7c0f"/>
+          <circle cx="38" cy="36" r="12" fill="#65a30d"/><circle cx="62" cy="36" r="12" fill="#65a30d"/>
+          <ellipse cx="38" cy="37" rx="8" ry="6" fill="#fff"/><circle cx="36" cy="37" r="3" fill="#0f172a"/>
+          <ellipse cx="62" cy="37" rx="8" ry="6" fill="#fff"/><circle cx="60" cy="37" r="3" fill="#0f172a"/>
+          <path d="M27 33 Q38 37 47 33" stroke="#365314" stroke-width="3" fill="none"/>
+          <path d="M53 33 Q62 37 73 33" stroke="#365314" stroke-width="3" fill="none"/>
+          <path d="M30 67 Q50 74 70 67" stroke="#b91c1c" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+        </svg>`
+      },
+      {
+        id: "thisisfine", name: "火場淡定狗", quote: "體脂上升中... This is fine ☕", isBoss: false,
+        svg: () => `<svg viewBox="0 0 100 100" width="92" height="92">
+          <path d="M12 85 Q18 55 26 75 Q34 45 42 75" fill="#f97316"/>
+          <path d="M62 85 Q70 50 78 75 Q86 55 92 85" fill="#ef4444"/>
+          <circle cx="50" cy="56" r="26" fill="#d97706"/>
+          <rect x="38" y="24" width="24" height="8" rx="2" fill="#1e293b"/><rect x="32" y="31" width="36" height="3" fill="#1e293b"/>
+          <circle cx="42" cy="51" r="6.5" fill="#fff"/><circle cx="42" cy="51" r="2.2" fill="#0f172a"/>
+          <circle cx="58" cy="51" r="6.5" fill="#fff"/><circle cx="58" cy="51" r="2.2" fill="#0f172a"/>
+          <path d="M40 66 Q50 71 60 66" stroke="#0f172a" stroke-width="2" fill="none"/>
+          <rect x="66" y="64" width="12" height="14" rx="2" fill="#f8fafc"/>
+        </svg>`
+      },
+      {
+        id: "capybara", name: "佛系水豚君", quote: "情緒穩定...拒絕流汗 🍊", isBoss: false,
+        svg: () => `<svg viewBox="0 0 100 100" width="92" height="92">
+          <rect x="20" y="34" width="60" height="46" rx="22" fill="#92400e"/>
+          <circle cx="28" cy="36" r="7" fill="#78350f"/><circle cx="72" cy="36" r="7" fill="#78350f"/>
+          <circle cx="50" cy="24" r="9" fill="#f97316"/><path d="M50 15 L54 11" stroke="#22c55e" stroke-width="3" stroke-linecap="round"/>
+          <line x1="33" y1="52" x2="43" y2="52" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+          <line x1="57" y1="52" x2="67" y2="52" stroke="#1e293b" stroke-width="3" stroke-linecap="round"/>
+          <ellipse cx="50" cy="62" rx="10" ry="7" fill="#78350f"/>
+        </svg>`
+      },
+      {
+        id: "bananacat", name: "哭哭香蕉貓", quote: "嗚嗚嗚不要伏地挺身 🍌", isBoss: false,
+        svg: () => `<svg viewBox="0 0 100 100" width="92" height="92">
+          <path d="M35 16 Q68 20 74 82 Q44 88 28 74 Q26 36 35 16 Z" fill="#facc15" stroke="#ca8a04" stroke-width="2"/>
+          <circle cx="48" cy="54" r="18" fill="#f8fafc"/>
+          <ellipse cx="42" cy="52" rx="4" ry="5" fill="#38bdf8"/><ellipse cx="54" cy="52" rx="4" ry="5" fill="#38bdf8"/>
+          <path d="M40 57 L38 72" stroke="#38bdf8" stroke-width="3"/><path d="M56 57 L58 72" stroke="#38bdf8" stroke-width="3"/>
+          <path d="M44 63 Q48 59 52 63" stroke="#0f172a" stroke-width="2" fill="none"/>
+        </svg>`
+      },
+      {
+        id: "question", name: "黑人問號 ???", quote: "運動？那是什麼能吃嗎？", isBoss: false,
+        svg: () => `<svg viewBox="0 0 100 100" width="92" height="92">
+          <circle cx="50" cy="56" r="28" fill="#78350f"/>
+          <path d="M24 46 Q50 22 76 46" fill="#1e293b"/>
+          <path d="M34 48 Q40 44 45 49" stroke="#0f172a" stroke-width="2.5" fill="none"/>
+          <path d="M55 46 Q61 42 67 48" stroke="#0f172a" stroke-width="2.5" fill="none"/>
+          <circle cx="40" cy="54" r="3" fill="#fff"/><circle cx="60" cy="54" r="3" fill="#fff"/>
+          <path d="M43 68 Q51 64 58 69" stroke="#fff" stroke-width="2" fill="none"/>
+          <text x="10" y="32" fill="#fbbf24" font-size="16" font-weight="900">?</text>
+          <text x="76" y="30" fill="#ff7597" font-size="18" font-weight="900">?</text>
+          <text x="45" y="20" fill="#38bdf8" font-size="15" font-weight="900">?</text>
+        </svg>`
+      },
+      {
+        id: "stonks", name: "體重 STONKS 先生", quote: "體重曲線 STONKS ↗", isBoss: false,
+        svg: () => `<svg viewBox="0 0 100 100" width="92" height="92">
+          <path d="M24 88 L32 62 L68 62 L76 88 Z" fill="#1e293b"/>
+          <polygon points="50,62 47,82 53,82" fill="#ef4444"/>
+          <ellipse cx="50" cy="40" rx="18" ry="23" fill="#fed7aa"/>
+          <circle cx="43" cy="36" r="2.2" fill="#0f172a"/><circle cx="57" cy="36" r="2.2" fill="#0f172a"/>
+          <path d="M44 49 Q50 52 56 49" stroke="#0f172a" stroke-width="2" fill="none"/>
+          <polyline points="12,74 36,58 52,64 84,26" fill="none" stroke="#f97316" stroke-width="5" stroke-linecap="round"/>
+          <polygon points="88,22 74,24 84,36" fill="#f97316"/>
+        </svg>`
+      },
+      {
+        id: "trollface", name: "經典欠揍 Trollface", quote: "U Mad Bro? 明天再練吧～", isBoss: false,
+        svg: () => `<svg viewBox="0 0 100 100" width="92" height="92">
+          <path d="M22 48 C22 24, 78 24, 78 48 C82 68, 66 84, 50 84 C34 84, 18 68, 22 48 Z" fill="#f8fafc" stroke="#0f172a" stroke-width="2.5"/>
+          <ellipse cx="38" cy="43" rx="7" ry="4" fill="#0f172a"/><ellipse cx="62" cy="43" rx="7" ry="4" fill="#0f172a"/>
+          <path d="M26 56 Q50 78 74 56 Q50 66 26 56 Z" fill="#fff" stroke="#0f172a" stroke-width="2.5"/>
+          <line x1="38" y1="59" x2="38" y2="66" stroke="#0f172a" stroke-width="1.8"/>
+          <line x1="50" y1="61" x2="50" y2="68" stroke="#0f172a" stroke-width="1.8"/>
+          <line x1="62" y1="59" x2="62" y2="66" stroke="#0f172a" stroke-width="1.8"/>
+        </svg>`
+      },
+      {
+        id: "marmot", name: "尖叫土撥鼠", quote: "啊啊啊啊啊深蹲好累！", isBoss: false,
+        svg: () => `<svg viewBox="0 0 100 100" width="92" height="92">
+          <path d="M26 86 C24 44, 34 22, 50 22 C66 22, 76 44, 74 86 Z" fill="#b45309"/>
+          <circle cx="32" cy="30" r="6" fill="#78350f"/><circle cx="68" cy="30" r="6" fill="#78350f"/>
+          <circle cx="41" cy="40" r="4" fill="#0f172a"/><circle cx="59" cy="40" r="4" fill="#0f172a"/>
+          <ellipse cx="50" cy="58" rx="11" ry="14" fill="#450a0a"/>
+          <rect x="46" y="45" width="4" height="5" fill="#fff"/><rect x="50" y="45" width="4" height="5" fill="#fff"/>
+        </svg>`
+      },
+      {
+        id: "cheems", name: "委屈廢柴 Cheems", quote: "我只是隻軟爛小廢柴...", isBoss: false,
+        svg: () => `<svg viewBox="0 0 100 100" width="92" height="92">
+          <path d="M26 84 C22 46, 36 24, 52 24 C68 24, 78 46, 76 84 Z" fill="#eab308"/>
+          <polygon points="32,30 34,14 46,26" fill="#ca8a04"/><polygon points="64,30 66,14 54,26" fill="#ca8a04"/>
+          <circle cx="42" cy="44" r="3.5" fill="#0f172a"/><circle cx="58" cy="44" r="3.5" fill="#0f172a"/>
+          <ellipse cx="50" cy="54" rx="5" ry="3.5" fill="#1e293b"/>
+          <path d="M43 62 Q50 58 57 62" stroke="#1e293b" stroke-width="2.2" fill="none"/>
+        </svg>`
+      },
+      {
+        id: "nyancat", name: "彩虹糖霜貓 Nyan", quote: "Nya~ 吃一塊草莓吐司吧", isBoss: false,
+        svg: () => `<svg viewBox="0 0 100 100" width="92" height="92">
+          <rect x="6" y="38" width="30" height="6" fill="#ef4444"/><rect x="6" y="44" width="30" height="6" fill="#facc15"/>
+          <rect x="6" y="50" width="30" height="6" fill="#4ade80"/><rect x="6" y="56" width="30" height="6" fill="#38bdf8"/>
+          <rect x="28" y="32" width="48" height="36" rx="8" fill="#f472b6" stroke="#fde047" stroke-width="3"/>
+          <circle cx="68" cy="52" r="16" fill="#94a3b8"/>
+          <circle cx="63" cy="50" r="2.5" fill="#0f172a"/><circle cx="74" cy="50" r="2.5" fill="#0f172a"/>
+          <ellipse cx="59" cy="55" rx="3" ry="2" fill="#fb7185"/><ellipse cx="78" cy="55" rx="3" ry="2" fill="#fb7185"/>
+        </svg>`
+      },
+      // 4 隻守關迷因大 BOSS
+      {
+        id: "boss_boba", name: "👑 全糖珍奶雞排完全體", quote: "深夜十一點的惡魔低語！", isBoss: true,
+        svg: () => `<svg viewBox="0 0 100 100" width="104" height="104">
+          <polygon points="28,22 38,8 50,20 62,8 72,22" fill="#fbbf24"/>
+          <path d="M28 26 L72 26 L66 86 L34 86 Z" fill="#d97706" stroke="#fef3c7" stroke-width="2.5"/>
+          <rect x="54" y="10" width="7" height="34" transform="rotate(15 54 10)" fill="#39c5bb"/>
+          <circle cx="42" cy="74" r="5" fill="#1e293b"/><circle cx="52" cy="78" r="5" fill="#1e293b"/><circle cx="60" cy="72" r="5" fill="#1e293b"/>
+          <circle cx="42" cy="46" r="4.5" fill="#fff"/><circle cx="42" cy="46" r="2" fill="#ef4444"/>
+          <circle cx="58" cy="46" r="4.5" fill="#fff"/><circle cx="58" cy="46" r="2" fill="#ef4444"/>
+          <path d="M42 58 Q50 65 58 58" stroke="#fff" stroke-width="2.5" fill="none"/>
+        </svg>`
+      },
+      {
+        id: "boss_sofa", name: "👑 週末沙發封印獸", quote: "躺下去就再也起不來了喔～", isBoss: true,
+        svg: () => `<svg viewBox="0 0 100 100" width="104" height="104">
+          <polygon points="30,24 40,10 50,22 60,10 70,24" fill="#fbbf24"/>
+          <rect x="14" y="42" width="72" height="40" rx="14" fill="#7c3aed"/>
+          <rect x="24" y="28" width="52" height="26" rx="10" fill="#8b5cf6"/>
+          <circle cx="40" cy="44" r="5" fill="#fef08a"/><circle cx="60" cy="44" r="5" fill="#fef08a"/>
+          <path d="M38 62 Q50 54 62 62" stroke="#f43f5e" stroke-width="3.5" fill="none"/>
+        </svg>`
+      },
+      {
+        id: "boss_ot", name: "👑 需求臨時變更怪", quote: "下班前五分鐘改個小需求！", isBoss: true,
+        svg: () => `<svg viewBox="0 0 100 100" width="104" height="104">
+          <polygon points="30,20 40,6 50,18 60,6 70,20" fill="#fbbf24"/>
+          <rect x="22" y="24" width="56" height="58" rx="12" fill="#e11d48"/>
+          <text x="50" y="52" text-anchor="middle" fill="#fff" font-size="16" font-weight="900">BUG!</text>
+          <path d="M34 66 L44 60 L50 66 L56 60 L66 66" stroke="#fef08a" stroke-width="3" fill="none"/>
+        </svg>`
+      },
+      {
+        id: "boss_snooze", name: "👑 再睡五分鐘魔王", quote: "鬧鐘按掉再睡五分鐘就好...", isBoss: true,
+        svg: () => `<svg viewBox="0 0 100 100" width="104" height="104">
+          <polygon points="30,20 40,6 50,18 60,6 70,20" fill="#fbbf24"/>
+          <circle cx="50" cy="54" r="30" fill="#2563eb" stroke="#93c5fd" stroke-width="3"/>
+          <line x1="50" y1="54" x2="50" y2="34" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+          <line x1="50" y1="54" x2="66" y2="54" stroke="#fbbf24" stroke-width="3.5" stroke-linecap="round"/>
+          <text x="68" y="32" fill="#fef08a" font-size="13" font-weight="900">Zzz</text>
+        </svg>`
+      }
+    ];
+
+    const NORMAL_MEMES = MEME_MONSTERS.filter(m => !m.isBoss);
+    const BOSS_MEMES = MEME_MONSTERS.filter(m => m.isBoss);
 
     /* =========================================================================
-       3. 轉職、技能、汗水星盤與數值公式
+       4. 轉職、技能、汗水星盤與每日懸賞
        ========================================================================= */
     const JOBS = [
       { minLv: 1,  title: "見習歌姬",       mult: 1.0,  desc: "手握翠綠大蔥的初音，踏出音律冒險第一步。" },
@@ -969,6 +1248,12 @@
       { key: "gemEcho",   name: "💎 汗水共鳴增幅", max: 5, cost: 3, desc: "運動獨立乘區與小遊戲共鳴效果額外提升 +15%/級。" }
     ];
 
+    const BOUNTY_DEFS = [
+      { key: "cheer",  title: "點擊舞台應援 15 次", target: 15, rewardText: "180 金幣", claim: () => { rpg.gold += 180; } },
+      { key: "forge",  title: "進行 1 次鍛造或強化", target: 1,  rewardText: "240 金幣", claim: () => { rpg.gold += 240; } },
+      { key: "rhythm", title: "完成 1 局音律小遊戲", target: 1,  rewardText: "320 金幣 + 50%應援氣", claim: () => { rpg.gold += 320; feverCharge = Math.min(100, feverCharge + 50); } }
+    ];
+
     let skillCooldowns = [0, 0, 0, 0];
     let buff39Timer = 0;
     let feverCharge = 0;
@@ -982,12 +1267,10 @@
       return cur;
     }
 
-    // 瓶頸機制 1：訓練與強化上限受「運動等級 × 10」嚴格限制
     function getUpgradeCap() {
       return rpg.level * 10;
     }
 
-    // 瓶頸機制 2：每 5 關的守關 BOSS 需要對應的運動等級才能擊碎「惰性結界」
     function getBossRequiredLevel(stageNum) {
       return Math.max(1, Math.floor(stageNum / 5));
     }
@@ -1002,10 +1285,11 @@
 
       const baseAtk = 10 + rpg.training.atk * 7 + eqAtk;
       const echoMult = 1 + rpg.talents.gemEcho * 0.15;
-      // 運動等級獨立乘區：每升 1 等獲得 +45% 乘區（受汗水天賦再放大）
+      const discoveredCount = Object.keys(rpg.seenMemes).length;
+      const bestiaryMult = 1 + discoveredCount * 0.01;
       const levelMult = (1 + (rpg.level - 1) * 0.45) * echoMult;
       const rhythmMult = 1 + (rpg.rhythmBonusPct / 100) * echoMult;
-      const totalAtk = Math.floor(baseAtk * levelMult * job.mult * rhythmMult);
+      const totalAtk = Math.floor(baseAtk * levelMult * job.mult * rhythmMult * bestiaryMult);
 
       const critRate = Math.min(85, 5 + rpg.training.crit * 1.5 + (buff39Timer > 0 ? 25 : 0));
       const critDmg = 1.5 + rpg.training.cdmg * 0.12;
@@ -1021,11 +1305,11 @@
       const catMult = rpg.talents.blackCat * 0.35;
       const estDps = Math.floor(totalAtk * aps * (1 + doubleChance + catMult) * (1 + (critRate / 100) * (critDmg - 1)));
 
-      return { totalAtk, critRate, critDmg, aps, levelMult, rhythmMult, job, estDps, goldMult, isDopamine, doubleChance, catMult };
+      return { totalAtk, critRate, critDmg, aps, levelMult, rhythmMult, bestiaryMult, discoveredCount, job, estDps, goldMult, isDopamine, doubleChance, catMult };
     }
 
     /* =========================================================================
-       4. 動態 SVG 外觀與怪物生成
+       5. 動態 SVG 外觀與怪物生成
        ========================================================================= */
     function renderMikuVisuals() {
       const auraGroup = document.getElementById('mikuJobAura');
@@ -1072,43 +1356,30 @@
       document.getElementById('catFamiliarBox').style.display = rpg.talents.blackCat > 0 ? 'block' : 'none';
     }
 
-    const MONSTER_TYPES = [
-      { name: "走音史萊姆", color: "#60a5fa", eye: "#fef08a" },
-      { name: "卡頓小精靈", color: "#a78bfa", eye: "#f43f5e" },
-      { name: "熬夜黑眼圈怪", color: "#64748b", eye: "#38bdf8" },
-      { name: "沙發馬鈴薯精", color: "#f59e0b", eye: "#ffffff" },
-      { name: "惰性結界魔王", color: "#f43f5e", eye: "#fbbf24" }
-    ];
+    let curMonster = { meme: MEME_MONSTERS[0], maxHp: 45, hp: 45, isBoss: false };
 
-    let curMonster = { name: "", maxHp: 45, hp: 45, isBoss: false };
+    const MIKU_LINES = [
+      "為了果果約會衝呀！♪",
+      "諾讚正在看著你運動喔！",
+      "今天的汗水會變成超強戰力！",
+      "39！音律能量充滿中～",
+      "深蹲跟伏地挺身交給你了！"
+    ];
 
     function spawnMonster() {
       const isBoss = rpg.fightingBoss;
       const baseHp = Math.floor(45 * Math.pow(1.26, rpg.stage - 1));
       const maxHp = isBoss ? baseHp * 5 : baseHp;
-      const mType = isBoss ? MONSTER_TYPES[4] : MONSTER_TYPES[(rpg.stage - 1) % 4];
+      const pool = isBoss ? BOSS_MEMES : NORMAL_MEMES;
+      const meme = pool[(rpg.stage - 1 + Math.floor(Math.random() * pool.length)) % pool.length];
 
-      curMonster = {
-        name: isBoss ? `👑 BOSS・${mType.name}` : mType.name,
-        maxHp,
-        hp: maxHp,
-        isBoss
-      };
+      curMonster = { meme, maxHp, hp: maxHp, isBoss };
       if (isBoss) rpg.bossTimer = 30;
 
-      document.getElementById('monsterName').textContent = curMonster.name;
-      document.getElementById('monsterSprite').innerHTML = `
-        <svg viewBox="0 0 100 100" width="${isBoss ? 104 : 85}" height="${isBoss ? 104 : 85}">
-          <path d="M18 76 C12 42, 34 22, 50 22 C66 22, 88 42, 82 76 C76 88, 24 88, 18 76 Z" fill="${mType.color}" />
-          <path d="M28 36 Q42 26 56 32" stroke="#fff" stroke-width="3" fill="none" opacity="0.45" stroke-linecap="round" />
-          ${isBoss ? '<polygon points="32,22 40,8 50,20 60,8 68,22" fill="#fbbf24" />' : ''}
-          <circle cx="38" cy="54" r="6" fill="#0f172a" />
-          <circle cx="62" cy="54" r="6" fill="#0f172a" />
-          <circle cx="39" cy="52" r="2.2" fill="${mType.eye}" />
-          <circle cx="63" cy="52" r="2.2" fill="${mType.eye}" />
-          <path d="M42 68 Q50 62 58 68" stroke="#0f172a" stroke-width="2.5" fill="none" stroke-linecap="round" />
-        </svg>
-      `;
+      document.getElementById('monsterName').textContent = meme.name;
+      document.getElementById('monsterSprite').innerHTML = meme.svg(false);
+      document.getElementById('memeBubble').textContent = meme.quote;
+      document.getElementById('mikuBubble').textContent = MIKU_LINES[Math.floor(Math.random() * MIKU_LINES.length)];
       updateMonsterHpUI();
     }
 
@@ -1119,7 +1390,7 @@
     }
 
     /* =========================================================================
-       5. 戰鬥迴圈、特效與瓶頸驗證
+       6. 戰鬥迴圈、特效與瓶頸驗證
        ========================================================================= */
     function formatNum(n) {
       if (n >= 1e8) return (n / 1e8).toFixed(2) + '億';
@@ -1133,7 +1404,7 @@
       el.className = 'dmg-pop ' + type;
       el.textContent = text;
       el.style.right = (26 + Math.random() * 58) + 'px';
-      el.style.top = (42 + Math.random() * 48) + 'px';
+      el.style.top = (44 + Math.random() * 48) + 'px';
       fx.appendChild(el);
       setTimeout(() => el.remove(), 720);
     }
@@ -1162,6 +1433,14 @@
       void monEl.offsetWidth;
       monEl.classList.add('hit');
 
+      // Pop Cat 特殊受擊張嘴互動
+      if (curMonster.meme.id === 'popcat') {
+        monEl.innerHTML = curMonster.meme.svg(true);
+        setTimeout(() => {
+          if (curMonster.meme.id === 'popcat') monEl.innerHTML = curMonster.meme.svg(false);
+        }, 160);
+      }
+
       triggerSlashFx();
       curMonster.hp -= dmg;
 
@@ -1173,14 +1452,12 @@
         spawnPopText(`-${formatNum(dmg)}`);
       }
 
-      // 汗水天賦：音律雙重連擊
       if (!skillName && st.doubleChance > 0 && Math.random() < st.doubleChance) {
         const extra = Math.floor(dmg * 0.85);
         curMonster.hp -= extra;
         setTimeout(() => spawnPopText(`⚡連斬 -${formatNum(extra)}`, 'skill'), 90);
       }
 
-      // 汗水天賦：黑貓使魔協戰
       if (!skillName && st.catMult > 0) {
         const catDmg = Math.floor(st.totalAtk * st.catMult);
         curMonster.hp -= catDmg;
@@ -1195,6 +1472,14 @@
     }
 
     function onMonsterDefeated(st) {
+      // 記錄迷因圖鑑
+      const mId = curMonster.meme.id;
+      const isNewDiscovery = !rpg.seenMemes[mId];
+      rpg.seenMemes[mId] = (rpg.seenMemes[mId] || 0) + 1;
+      if (isNewDiscovery) {
+        showToast(`📖 收錄新迷因【${curMonster.meme.name}】！全攻擊永久 +1%`, 'gold');
+      }
+
       const baseGold = Math.floor((9 + rpg.stage * 5) * st.goldMult * (curMonster.isBoss ? 4.5 : 1));
       rpg.gold += baseGold;
       spawnPopText(`+${formatNum(baseGold)}💰`, 'cheer');
@@ -1218,7 +1503,7 @@
     function startBossFight() {
       const reqLv = getBossRequiredLevel(rpg.stage);
       if (rpg.level < reqLv) {
-        return alert(`🛡️ 魔王身上覆蓋著【惰性結界】！\n需要運動等級達到 Lv.${reqLv}（目前 Lv.${rpg.level}）才能擊碎結界挑戰！\n快去「❤️ 運動集點」完成一次運動就能突破瓶頸囉！`);
+        return showToast(`🛡️ 魔王覆蓋著【惰性結界】！需運動等級 Lv.${reqLv}（目前 Lv.${rpg.level}）才能突破！`, 'warn', 3600);
       }
       rpg.fightingBoss = true;
       spawnMonster();
@@ -1250,6 +1535,9 @@
 
     function cheerMiku(e) {
       if (e && (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT')) return;
+      ensureDailyBounties();
+      rpg.bountyProgress.cheer = Math.min(15, rpg.bountyProgress.cheer + 1);
+
       const notes = ["💚 應援 +1", "🎶 Miku加油！", "✨ 螢光棒揮舞", "💫 音律共振"];
       spawnPopText(notes[Math.floor(Math.random() * notes.length)], 'cheer');
       if (feverTimer <= 0) {
@@ -1264,7 +1552,35 @@
     }
 
     /* =========================================================================
-       6. 裝備鍛造升星、汗水星盤與訓練
+       7. 迷因圖鑑視窗
+       ========================================================================= */
+    function openBestiary(e) {
+      if (e) e.stopPropagation();
+      const countSeen = Object.keys(rpg.seenMemes).length;
+      document.getElementById('bestiaryBonusText').textContent =
+        `已收錄 ${countSeen} / ${MEME_MONSTERS.length} 種迷因（全屬性永久 +${countSeen}%）`;
+      document.getElementById('bestiaryGrid').innerHTML = MEME_MONSTERS.map(m => {
+        const kills = rpg.seenMemes[m.id] || 0;
+        const unlocked = kills > 0;
+        return `
+          <div class="bestiary-item ${unlocked ? '' : 'locked'}">
+            <div style="height:56px; display:flex; align-items:center; justify-content:center; transform:scale(0.6);">
+              ${unlocked ? m.svg(false) : '<span style="font-size:2.4rem;">❓</span>'}
+            </div>
+            <div style="font-weight:800; color:${unlocked ? '#f8fafc' : '#64748b'};">${unlocked ? m.name : '未遭遇'}</div>
+            <div style="color:var(--miku); font-size:0.65rem;">${unlocked ? `擊敗 ${kills} 次` : '???'}</div>
+          </div>
+        `;
+      }).join('');
+      document.getElementById('bestiaryModal').classList.add('show');
+    }
+
+    function closeBestiary() {
+      document.getElementById('bestiaryModal').classList.remove('show');
+    }
+
+    /* =========================================================================
+       8. 裝備鍛造升星、汗水星盤、懸賞與訓練 (全數改為 Toast 非阻斷提示)
        ========================================================================= */
     const GEAR_POOL = {
       weapon: [
@@ -1298,8 +1614,10 @@
 
     function summonGear() {
       const cost = getGachaCost();
-      if (rpg.gold < cost) return alert(`音律金幣不足喔！需要 ${cost} 金幣`);
+      if (rpg.gold < cost) return showToast(`💰 音律金幣不足喔（需要 ${cost} 金幣）`, 'warn');
       rpg.gold -= cost;
+      ensureDailyBounties();
+      rpg.bountyProgress.forge = 1;
       grantRandomGear(false);
       saveRpg();
       updateAllUI();
@@ -1320,21 +1638,20 @@
 
       if (RARITY_RANK[candidate.rarity] > RARITY_RANK[current.rarity]) {
         rpg.equip[slot] = { ...candidate, enhance: current.enhance, stars: current.stars, shards: current.shards };
-        if (!silentDrop) alert(`✨ 鍛造出高階神裝！【${candidate.rarity}】${candidate.name}（自動繼承 +${current.enhance} 與 ★${current.stars}）！`);
+        if (!silentDrop) showToast(`✨ 鍛造出高階神裝！【${candidate.rarity}】${candidate.name}（繼承強化與星級）`, 'gold', 3400);
         else spawnPopText(`🎁 掉落 ${candidate.rarity} ${candidate.name}!`, 'skill');
       } else {
-        // 自動轉化為升星碎片 (★1 -> ★5)
         current.shards = (current.shards || 0) + 1;
         const needShards = current.stars * 2;
         if (current.stars < 5 && current.shards >= needShards) {
           current.shards -= needShards;
           current.stars += 1;
-          if (!silentDrop) alert(`🌟 碎片集滿！【${current.name}】自動突破至 ★${current.stars} 星！`);
+          if (!silentDrop) showToast(`🌟 星塵集滿！【${current.name}】自動突破至 ★${current.stars} 星！`, 'gold', 3200);
           else spawnPopText(`🌟 ${current.name} 升至 ★${current.stars}!`, 'skill');
         } else {
           const refund = Math.floor(getGachaCost() * 0.35);
           rpg.gold += refund;
-          if (!silentDrop) alert(`抽到【${candidate.rarity}】${candidate.name}，已轉化為星塵（${current.shards}/${needShards}）並返還 ${refund} 金幣！`);
+          if (!silentDrop) showToast(`抽到【${candidate.rarity}】${candidate.name} → 轉化星塵 (${current.shards}/${needShards}) 並返還 ${refund} 金`);
         }
       }
       renderMikuVisuals();
@@ -1344,12 +1661,15 @@
       const item = rpg.equip[slot];
       const cap = getUpgradeCap();
       if (item.enhance >= cap) {
-        return alert(`🔒 已達目前運動等級上限 (+${cap})！\n完成一次運動升級後，上限將直接解鎖至 +${(rpg.level + 1) * 10}！`);
+        return showToast(`🔒 已達等級上限 (+${cap})！完成一次運動升等即可解鎖 +${(rpg.level + 1) * 10}`, 'warn', 3200);
       }
       const cost = Math.floor(40 * Math.pow(1.26, item.enhance));
-      if (rpg.gold < cost) return alert(`金幣不足！需要 ${cost} 金幣`);
+      if (rpg.gold < cost) return showToast(`💰 金幣不足（需要 ${cost} 金幣）`, 'warn');
       rpg.gold -= cost;
       item.enhance += 1;
+      ensureDailyBounties();
+      rpg.bountyProgress.forge = 1;
+      showToast(`🔨 ${item.name} 強化至 +${item.enhance}！`);
       saveRpg();
       updateAllUI();
     }
@@ -1358,10 +1678,10 @@
       const lv = rpg.training[key];
       const cap = getUpgradeCap();
       if (lv >= cap) {
-        return alert(`🔒 已達目前運動等級上限 (Lv.${cap})！\n只要完成一次運動升等，就能繼續把訓練往上拉滿囉！`);
+        return showToast(`🔒 已達訓練上限 (Lv.${cap})！完成一次運動升級就能繼續拉滿囉`, 'warn', 3200);
       }
       const cost = Math.floor(35 * Math.pow(1.24, lv));
-      if (rpg.gold < cost) return alert(`金幣不足！需要 ${cost} 金幣`);
+      if (rpg.gold < cost) return showToast(`💰 金幣不足（需要 ${cost} 金幣）`, 'warn');
       rpg.gold -= cost;
       rpg.training[key] += 1;
       saveRpg();
@@ -1373,29 +1693,42 @@
       const curLv = rpg.talents[key];
       if (curLv >= node.max) return;
       if (rpg.sweatGems < node.cost) {
-        return alert(`💎 汗水星鑽不足（需要 ${node.cost} 💎）！\n汗水星鑽無法靠掛機獲得，完成一次運動即可獲得 💎 喔！`);
+        return showToast(`💎 汗水星鑽不足（需要 ${node.cost} 💎），完成一次運動即可獲得！`, 'warn', 3200);
       }
       rpg.sweatGems -= node.cost;
       rpg.talents[key] += 1;
+      showToast(`🌌 已點亮【${node.name}】Lv.${rpg.talents[key]}！`, 'gold');
       saveRpg();
       renderMikuVisuals();
       updateAllUI();
     }
 
+    function claimBounty(key) {
+      ensureDailyBounties();
+      const def = BOUNTY_DEFS.find(b => b.key === key);
+      if (rpg.bountyClaimed[key]) return;
+      if (rpg.bountyProgress[key] < def.target) return;
+      rpg.bountyClaimed[key] = true;
+      def.claim();
+      showToast(`🎁 領取懸賞獎勵：${def.rewardText}！`, 'gold');
+      saveRpg();
+      updateAllUI();
+    }
+
     /* =========================================================================
-       7. 39 音符節拍小遊戲 (Rhythm Arcade Mini-Game)
+       9. 39 音符節拍小遊戲
        ========================================================================= */
     let rhythmRunning = false;
     let rhythmTimer = 25;
     let rhythmScore = 0;
     let rhythmCombo = 0;
-    let rhythmNotes = []; // { id, lane, y, isGold }
+    let rhythmNotes = [];
     let rhythmLoopId = null;
     let rhythmSpawnAcc = 0;
 
     function refreshStamina() {
       const now = Date.now();
-      const diffMins = Math.floor((now - rpg.lastStaminaTime) / (30 * 60 * 1000)); // 每 30 分鐘回 1 點
+      const diffMins = Math.floor((now - rpg.lastStaminaTime) / (30 * 60 * 1000));
       if (diffMins > 0 && rpg.stamina < 3) {
         rpg.stamina = Math.min(3, rpg.stamina + diffMins);
         rpg.lastStaminaTime = now;
@@ -1407,7 +1740,7 @@
       if (rhythmRunning) return;
       refreshStamina();
       if (rpg.stamina <= 0) {
-        return alert('⚡ 活力不足！每 30 分鐘恢復 1 點，或完成一次運動立即補滿 3 點活力！');
+        return showToast('⚡ 活力不足！每 30 分鐘回 1 點，或完成一次運動立即補滿 3 點！', 'warn', 3200);
       }
       rpg.stamina -= 1;
       rpg.lastStaminaTime = Date.now();
@@ -1434,7 +1767,6 @@
         rhythmTimer -= dt;
         rhythmSpawnAcc += dt;
 
-        // 依節奏生成音符
         if (rhythmSpawnAcc >= 0.48) {
           rhythmSpawnAcc = 0;
           const lane = Math.floor(Math.random() * 3);
@@ -1447,12 +1779,11 @@
           rhythmNotes.push({ lane, y: -40, isGold, el });
         }
 
-        // 更新掉落位置 (判定線約在 y = 235)
         for (let i = rhythmNotes.length - 1; i >= 0; i--) {
           const n = rhythmNotes[i];
-          n.y += 235 * dt;
+          n.y += 230 * dt;
           n.el.style.top = n.y + 'px';
-          if (n.y > 295) {
+          if (n.y > 285) {
             n.el.remove();
             rhythmNotes.splice(i, 1);
             rhythmCombo = 0;
@@ -1479,11 +1810,10 @@
       setTimeout(() => zone.style.transform = 'scale(1)', 90);
 
       const scaleNotes = [523.25, 659.25, 783.99];
-      // 尋找該軌道最接近判定線 (215 ~ 275) 的音符
       let hitIdx = -1;
       for (let i = 0; i < rhythmNotes.length; i++) {
         const n = rhythmNotes[i];
-        if (n.lane === laneIdx && n.y >= 185 && n.y <= 282) {
+        if (n.lane === laneIdx && n.y >= 175 && n.y <= 275) {
           hitIdx = i;
           break;
         }
@@ -1516,6 +1846,9 @@
       btn.disabled = false;
       btn.textContent = '▶ 消耗 1 活力開始演奏 (25s)';
 
+      ensureDailyBounties();
+      rpg.bountyProgress.rhythm = 1;
+
       const isDopamine = Date.now() < rpg.dopamineEndTime;
       const mult = isDopamine ? 2 : 1;
       const gainedPct = Number(((rhythmScore / 140) * mult).toFixed(1));
@@ -1526,33 +1859,44 @@
       saveRpg();
       updateAllUI();
 
-      alert(`🎶 演奏結束！得分：${rhythmScore}${isDopamine ? '（🔥運動狂熱 2倍獎勵！）' : ''}\n\n✨ 永久節奏共鳴提升：+${gainedPct}%（累計 +${rpg.rhythmBonusPct}%）\n💰 獲得音律金幣：+${gainedGold}`);
+      showToast(`🎶 演奏得分 ${rhythmScore}！永久共鳴 +${gainedPct}%、金幣 +${gainedGold}`, 'gold', 4000);
     }
 
     /* =========================================================================
-       8. 運動完成連動升級 (每天最多 +1 等，06:00 換日線 + 專屬汗水星鑽)
+       10. 運動完成連動升級 (06:00 換日線 + 週節奏連勝 + 專屬星鑽)
        ========================================================================= */
     function onWorkoutRewardTrigger(modeLabel) {
       const todayKey = getFitnessDayKey();
-      // 每次完成運動必給：30分鐘狂熱BUFF + 補滿小遊戲活力 + 專屬汗水星鑽
-      rpg.dopamineEndTime = Date.now() + 30 * 60 * 1000;
+      const now = Date.now();
+
+      // 週節奏連勝判定：距離上次運動在 3.5 天 (84小時) 內皆延續連勝
+      if (rpg.lastWorkoutTs > 0 && (now - rpg.lastWorkoutTs) <= 84 * 3600 * 1000) {
+        if (rpg.lastLevelUpDayKey !== todayKey) rpg.streakCount += 1;
+      } else {
+        rpg.streakCount = 1;
+      }
+      rpg.lastWorkoutTs = now;
+
+      rpg.dopamineEndTime = now + 30 * 60 * 1000;
       rpg.stamina = 3;
-      rpg.lastStaminaTime = Date.now();
+      rpg.lastStaminaTime = now;
+
+      const streakBonusGem = rpg.streakCount >= 7 ? 2 : (rpg.streakCount >= 3 ? 1 : 0);
 
       if (rpg.lastLevelUpDayKey !== todayKey) {
         rpg.lastLevelUpDayKey = todayKey;
         rpg.level += 1;
-        const gemReward = 3;
+        const gemReward = 3 + streakBonusGem;
         rpg.sweatGems += gemReward;
 
         const job = getCurrentJob();
         const unlockedSkill = SKILLS.find(s => s.unlockLv === rpg.level);
         const isJobUp = JOBS.some(j => j.minLv === rpg.level);
 
-        let msg = `完成「${modeLabel}」！<br>` +
-          `💎 獲得運動專屬<strong>【汗水星鑽 +${gemReward}】</strong>（可點亮星盤神技）<br>` +
+        let msg = `完成「${modeLabel}」（🔥 週連勝 ${rpg.streakCount} 次）！<br>` +
+          `💎 獲得<strong>【汗水星鑽 +${gemReward}】</strong>${streakBonusGem > 0 ? `（含連勝加成 +${streakBonusGem}）` : ''}<br>` +
           `🔓 訓練與裝備上限解鎖至 <strong style="color:var(--miku)">Lv.${rpg.level * 10}</strong><br>` +
-          `⚡ 補滿音律小遊戲活力＋開啟 30 分鐘【2倍狂熱】！`;
+          `⚡ 補滿小遊戲活力＋開啟 30 分鐘【2倍狂熱】！`;
 
         if (isJobUp) msg += `<br><br>👑 恭喜轉職為<strong>【${job.title}】</strong>（全屬性 ×${job.mult}）！`;
         if (unlockedSkill) msg += `<br>🎵 解鎖新主動技<strong>【${unlockedSkill.name}】</strong>！`;
@@ -1564,7 +1908,7 @@
         rpg.sweatGems += 1;
         const bonusGold = 180 + rpg.stage * 45;
         rpg.gold += bonusGold;
-        alert(`🎉 完成「${modeLabel}」，已點亮果果約會愛心 ❤️\n（今日等級已升過，明早 06:00 重置！額外獲得 💎1 汗水星鑽、${bonusGold} 金幣＋30分鐘 2倍狂熱！）`);
+        showToast(`❤️ 已點亮愛心！今日已升過等，額外獲得 💎1 星鑽、${bonusGold} 金幣與 2倍狂熱！`, 'gold', 3800);
       }
 
       saveRpg();
@@ -1581,7 +1925,7 @@
     }
 
     /* =========================================================================
-       9. UI 渲染與分頁切換
+       11. UI 渲染與分頁切換
        ========================================================================= */
     function switchTab(tab) {
       if (rhythmRunning && tab !== 'game') {
@@ -1649,15 +1993,15 @@
     }
 
     function updateAllUI() {
+      ensureDailyBounties();
       const st = calcStats();
-      // HUD
+
       document.getElementById('hudJobTitle').textContent = `Lv.${rpg.level} ${st.job.title}`;
       document.getElementById('hudPower').textContent = `戰力 ${formatNum(st.totalAtk)}`;
       document.getElementById('hudGold').textContent = formatNum(rpg.gold);
       document.getElementById('hudGems').textContent = `${rpg.sweatGems} 💎`;
       document.getElementById('hudHearts').textContent = `${count}/${config.targetCount} ❤️`;
 
-      // 戰場標頭 & BOSS 結界檢測
       document.getElementById('stageLabel').textContent = `第 ${rpg.stage} 關` + (st.isDopamine ? ' 🔥狂熱' : '');
       const bossArea = document.getElementById('bossControlArea');
       if (rpg.fightingBoss) {
@@ -1665,9 +2009,9 @@
       } else if (rpg.stage % 5 === 0) {
         const reqLv = getBossRequiredLevel(rpg.stage);
         if (rpg.level < reqLv) {
-          bossArea.innerHTML = `<button class="boss-btn locked-boss" onclick="startBossFight()">🔒 需運動Lv.${reqLv}</button>`;
+          bossArea.innerHTML = `<button class="boss-btn locked-boss" onclick="startBossFight()">🔒 需Lv.${reqLv}</button>`;
         } else {
-          bossArea.innerHTML = `<button class="boss-btn" onclick="startBossFight()">⚔️ 挑戰 BOSS</button>`;
+          bossArea.innerHTML = `<button class="boss-btn" onclick="startBossFight()">⚔️ 挑戰BOSS</button>`;
         }
       } else {
         bossArea.innerHTML = `<span class="badge">DPS ${formatNum(st.estDps)}/秒</span>`;
@@ -1675,7 +2019,6 @@
 
       document.getElementById('multBadge').textContent = `運動倍率 ×${st.levelMult.toFixed(2)}`;
 
-      // 今日是否已運動升級提示
       const todayKey = getFitnessDayKey();
       const ruleEl = document.getElementById('levelRuleStatus');
       if (rpg.lastLevelUpDayKey === todayKey) {
@@ -1731,6 +2074,27 @@
         `;
       }).join('');
 
+      // 分頁 2：每日懸賞
+      const doneBounties = BOUNTY_DEFS.filter(b => rpg.bountyClaimed[b.key]).length;
+      document.getElementById('bountyCountBadge').textContent = `${doneBounties} / 3 完成`;
+      document.getElementById('bountyList').innerHTML = BOUNTY_DEFS.map(b => {
+        const cur = rpg.bountyProgress[b.key];
+        const claimed = rpg.bountyClaimed[b.key];
+        const ready = cur >= b.target && !claimed;
+        return `
+          <div class="train-row">
+            <div>
+              <div style="font-size:0.83rem; font-weight:700;">${b.title} (${cur}/${b.target})</div>
+              <div style="font-size:0.71rem; color:var(--gold);">獎勵：${b.rewardText}</div>
+            </div>
+            <button class="btn-small ${claimed ? 'btn-secondary' : (ready ? 'btn-miku' : 'btn-secondary')}"
+              onclick="claimBounty('${b.key}')" ${!ready ? 'disabled' : ''}>
+              ${claimed ? '✅ 已領取' : (ready ? '領取獎勵' : '進行中')}
+            </button>
+          </div>
+        `;
+      }).join('');
+
       // 分頁 2：金幣訓練
       document.getElementById('rhythmBonusBadge').textContent = `小遊戲共鳴 +${rpg.rhythmBonusPct}%`;
       const trainDefs = [
@@ -1773,16 +2137,18 @@
         `;
       }).join('');
 
-      // 分頁 3：小遊戲狀態
+      // 分頁 3 & 4
       document.getElementById('gameStaminaBadge').textContent = `活力 ${rpg.stamina} / 3 ⚡`;
       document.getElementById('rhythmTotalDisplay').textContent = `+${rpg.rhythmBonusPct}% 攻/金`;
+      document.getElementById('streakBadge').textContent = `🔥 週節奏連勝：${rpg.streakCount} 次`;
+      document.getElementById('totalLifetimeNum').textContent = lifetime;
 
       updateSkillsUI();
       updateFeverUI();
     }
 
     /* =========================================================================
-       10. 遊戲主時脈 (自動戰鬥、自動應援無人機與離線收益)
+       12. 遊戲主時脈 (自動戰鬥、自動應援無人機與離線收益)
        ========================================================================= */
     let attackAcc = 0;
     let droneAcc = 0;
@@ -1806,7 +2172,6 @@
         updateFeverUI();
       }
 
-      // 汗水天賦：自動應援無人機
       if (rpg.talents.autoCheer > 0) {
         droneAcc += dt;
         if (droneAcc >= Math.max(0.8, 2.5 - rpg.talents.autoCheer * 0.3)) {
@@ -1825,7 +2190,7 @@
         if (rpg.bossTimer <= 0) {
           rpg.fightingBoss = false;
           spawnMonster();
-          spawnPopText("⏰ 挑戰超時，先強化再來！", "cheer");
+          showToast('⏰ 挑戰超時，先強化裝備再來挑戰！', 'warn');
         }
         updateAllUI();
       }
@@ -1854,7 +2219,7 @@
           const earned = Math.floor(kills * (9 + rpg.stage * 5) * st.goldMult);
           rpg.gold += earned;
           setTimeout(() => {
-            spawnPopText(`🌙 離線 ${Math.floor(elapsedSec / 60)} 分鐘：+${formatNum(earned)}金`, 'skill');
+            showToast(`🌙 離線 ${Math.floor(elapsedSec / 60)} 分鐘掛機收益：+${formatNum(earned)} 金幣`, 'gold', 3500);
             updateAllUI();
           }, 500);
         }
@@ -1862,7 +2227,7 @@
     }
 
     /* =========================================================================
-       11. 原本的果果約會集點 & 黃金四寶計時器 (100% 完整保留)
+       13. 原本的果果約會集點 & 黃金四寶計時器 (100% 完整保留)
        ========================================================================= */
     function getRank(total) {
       if (total >= 60) return "Lv.5 果果專屬挺拔猛男 👑";
@@ -1884,7 +2249,6 @@
       }
       document.getElementById('countBadge').textContent = `${count} / ${config.targetCount} 次`;
       document.getElementById('rankTitle').textContent = `稱號：${getRank(lifetime)}`;
-      document.getElementById('totalLifetime').textContent = `生涯累計：${lifetime} 次`;
       document.getElementById('unlockBanner').classList.toggle('show', count >= config.targetCount);
       updateAllUI();
     }
@@ -1931,6 +2295,27 @@
       if (confirm('確定要清空本月愛心，開啟新的一輪約會集點嗎？（生涯累計與初音等級會保留）')) {
         count = 0;
         saveState();
+        showToast('🔄 已開啟新的一輪果果約會集點！');
+      }
+    }
+
+    function exportBackup() {
+      const data = {
+        guoguo_cfg: config,
+        guoguo_workout_count: count,
+        guoguo_lifetime: lifetime,
+        guoguo_logs: logs,
+        miku_rpg_v2: rpg
+      };
+      const str = JSON.stringify(data);
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(str).then(() => {
+          showToast('📋 完整存檔 JSON 已複製到剪貼簿！', 'gold');
+        }).catch(() => {
+          prompt('請複製以下存檔備份碼：', str);
+        });
+      } else {
+        prompt('請複製以下存檔備份碼：', str);
       }
     }
 
@@ -1989,13 +2374,13 @@
 
     function openRandomYT() {
       stopRestBgm();
-      if (!config.ytLinks || config.ytLinks.length === 0) return alert('請先在設定裡貼上 YouTube 網址喔！');
+      if (!config.ytLinks || config.ytLinks.length === 0) return showToast('請先在設定裡貼上 YouTube 網址喔！', 'warn');
       const rawUrl = config.ytLinks[Math.floor(Math.random() * config.ytLinks.length)];
       const match = rawUrl.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
       const timeMatch = rawUrl.match(/[?&]t=(\d+)/);
       const videoId = match ? match[1] : null;
       const startSec = timeMatch ? timeMatch[1] : 50;
-      if (!videoId) return alert('YouTube 網址格式不正確');
+      if (!videoId) return showToast('YouTube 網址格式不正確', 'warn');
 
       const box = document.getElementById('ytContainer');
       box.innerHTML = `<iframe width="100%" height="150" src="https://www.youtube.com/embed/${videoId}?start=${startSec}&autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
@@ -2013,7 +2398,7 @@
     }
 
     function setMode(mode) {
-      if (timerId) return alert('請先暫停或重置計時器再切換模式喔！');
+      if (timerId) return showToast('請先暫停或重置計時器再切換模式喔！', 'warn');
       isLazyMode = (mode === 'lazy');
       document.getElementById('modeFull').classList.toggle('active', !isLazyMode);
       document.getElementById('modeLazy').classList.toggle('active', isLazyMode);
@@ -2133,7 +2518,7 @@
     function saveSettings() {
       const exLines = document.getElementById('cfgExercises').value.split('\n').map(s => s.trim()).filter(Boolean);
       const ytLines = document.getElementById('cfgYtLinks').value.split('\n').map(s => s.trim()).filter(Boolean);
-      if (exLines.length === 0) return alert('動作清單至少要有一行喔！');
+      if (exLines.length === 0) return showToast('動作清單至少要有一行喔！', 'warn');
 
       config = {
         workSec: Math.max(5, parseInt(document.getElementById('cfgWorkSec').value, 10) || 40),
@@ -2147,7 +2532,7 @@
       renderHearts();
       resetTimer();
       toggleSettings();
-      alert('✅ 設定已儲存並套用！');
+      showToast('✅ 設定已儲存並套用！');
     }
 
     // 初始化啟動
