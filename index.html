@@ -6,6 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="theme-color" content="#1e1e2e" />
   <title>果果約會集點 × 10分鐘運動</title>
+  <link rel="manifest" href="/manifest.json" />
   <style>
     :root {
       --bg: #16161e;
@@ -232,6 +233,10 @@
 
     renderHearts();
     updateTimerUI();
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
   </script>
 </body>
 </html>
