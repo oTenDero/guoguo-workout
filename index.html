@@ -4,208 +4,655 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="theme-color" content="#16161e" />
-  <title>果果約會集點 × 10分鐘運動</title>
+  <meta name="theme-color" content="#12131c" />
+  <title>初音音律戰姬 × 果果約會集點</title>
   <link rel="manifest" href="/manifest.json" />
   <style>
     :root {
-      --bg: #16161e;
-      --card: #22222e;
-      --card-sub: #2a2a38;
+      --bg: #12131c;
+      --card: #1c1e2d;
+      --card-sub: #26293d;
+      --miku: #39c5bb;
+      --miku-dark: #0d9488;
+      --miku-glow: rgba(57, 197, 187, 0.35);
       --accent: #ff7597;
       --work: #4ade80;
       --rest: #60a5fa;
       --gold: #fbbf24;
+      --purple: #c084fc;
       --text: #f1f5f9;
       --muted: #94a3b8;
     }
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
     body {
       margin: 0; background: var(--bg); color: var(--text);
       display: flex; flex-direction: column; align-items: center;
-      min-height: 100vh; padding: 16px 14px 50px;
+      min-height: 100vh; padding: 12px 12px 92px;
+      overflow-x: hidden;
     }
-    .container { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 16px; }
+    .container { width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 12px; }
+    .tab-page { display: none; flex-direction: column; gap: 12px; animation: fadeIn 0.2s ease; }
+    .tab-page.active { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
     .card {
-      background: var(--card); border-radius: 22px; padding: 18px;
+      background: var(--card); border-radius: 20px; padding: 15px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.04);
     }
     .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    h1 { font-size: 1.15rem; margin: 0; display: flex; align-items: center; gap: 6px; }
-    .badge { font-size: 0.85rem; background: rgba(255,117,151,0.18); color: var(--accent); padding: 4px 10px; border-radius: 99px; font-weight: 700; }
-    .level-bar {
-      background: var(--card-sub); border-radius: 12px; padding: 8px 12px;
-      font-size: 0.82rem; display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 12px; color: var(--gold);
+    h1 { font-size: 1.05rem; margin: 0; display: flex; align-items: center; gap: 6px; }
+    .badge { font-size: 0.78rem; background: rgba(57,197,187,0.18); color: var(--miku); padding: 4px 10px; border-radius: 99px; font-weight: 700; }
+    .badge.pink { background: rgba(255,117,151,0.18); color: var(--accent); }
+    .badge.gold { background: rgba(251,191,36,0.18); color: var(--gold); }
+
+    /* ================= 遊戲頂部狀態列 ================= */
+    .hud-bar {
+      display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 8px;
+      background: var(--card); padding: 10px 12px; border-radius: 16px;
+      border: 1px solid rgba(57,197,187,0.2);
+    }
+    .hud-item { display: flex; flex-direction: column; }
+    .hud-label { font-size: 0.68rem; color: var(--muted); }
+    .hud-val { font-size: 0.92rem; font-weight: 800; color: var(--text); }
+    .hud-val.miku { color: var(--miku); }
+    .hud-val.gold { color: var(--gold); }
+
+    /* ================= 戰鬥舞台 Arena ================= */
+    .arena-card {
+      position: relative; overflow: hidden; padding: 14px;
+      background: radial-gradient(circle at 50% 25%, #233347 0%, #171926 75%);
+      border: 1px solid rgba(57, 197, 187, 0.28);
+      border-radius: 22px; user-select: none; cursor: pointer;
+    }
+    .arena-card.fever-bg {
+      background: radial-gradient(circle at 50% 25%, #3b1d4a 0%, #181a29 75%);
+      border-color: var(--accent);
+      box-shadow: 0 0 24px rgba(255, 117, 151, 0.3);
+    }
+    .stage-header {
+      display: flex; justify-content: space-between; align-items: center;
+      position: relative; z-index: 3; margin-bottom: 6px;
+    }
+    .stage-pill {
+      background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.12);
+      padding: 4px 10px; border-radius: 99px; font-size: 0.78rem; font-weight: 700;
+    }
+    .boss-btn {
+      background: linear-gradient(135deg, #f43f5e, #fb923c); color: #fff;
+      border: none; border-radius: 99px; padding: 4px 11px; font-size: 0.75rem; font-weight: 800;
+      cursor: pointer; animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+
+    .battle-field {
+      position: relative; height: 205px; display: flex; justify-content: space-between;
+      align-items: flex-end; padding: 0 12px 16px; z-index: 2;
+    }
+    /* 舞台地板光圈 */
+    .stage-floor {
+      position: absolute; bottom: 8px; left: 5%; width: 90%; height: 24px;
+      background: radial-gradient(ellipse at center, rgba(57,197,187,0.3) 0%, transparent 70%);
+      border-radius: 50%; z-index: 1;
     }
 
-    /* 愛心集點區 */
-    .hearts-grid {
-      display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 12px 0;
+    /* 初音動畫 */
+    .miku-wrapper {
+      width: 135px; height: 165px; position: relative; z-index: 3;
+      animation: mikuIdle 1.8s ease-in-out infinite;
+      transform-origin: bottom center;
     }
+    .miku-wrapper.attacking { animation: mikuAttack 0.26s ease-out; }
+    @keyframes mikuIdle {
+      0%, 100% { transform: translateY(0) scaleY(1); }
+      50% { transform: translateY(-5px) scaleY(1.02); }
+    }
+    @keyframes mikuAttack {
+      0% { transform: translateX(0) rotate(0deg); }
+      45% { transform: translateX(34px) rotate(8deg) scale(1.06); }
+      100% { transform: translateX(0) rotate(0deg); }
+    }
+    .twintail-left { transform-origin: 58px 46px; animation: hairSwayL 2.2s ease-in-out infinite; }
+    .twintail-right { transform-origin: 102px 46px; animation: hairSwayR 2.2s ease-in-out infinite; }
+    @keyframes hairSwayL { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(6deg); } }
+    @keyframes hairSwayR { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-6deg); } }
+
+    /* 怪物區 */
+    .monster-wrapper {
+      width: 130px; display: flex; flex-direction: column; align-items: center; z-index: 3;
+    }
+    .monster-name { font-size: 0.74rem; font-weight: 700; color: #e2e8f0; margin-bottom: 4px; text-shadow: 0 1px 4px #000; }
+    .hp-bar-bg {
+      width: 100%; height: 8px; background: rgba(0,0,0,0.6); border-radius: 99px;
+      overflow: hidden; border: 1px solid rgba(255,255,255,0.15); margin-bottom: 6px;
+    }
+    .hp-bar-fill { height: 100%; background: linear-gradient(90deg, #ef4444, #f97316); width: 100%; transition: width 0.12s; }
+    .monster-svg-box {
+      width: 105px; height: 105px; display: flex; align-items: center; justify-content: center;
+      animation: monsterFloat 2s ease-in-out infinite;
+    }
+    .monster-svg-box.hit { animation: monsterHit 0.18s ease; filter: brightness(2.4); }
+    @keyframes monsterFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    @keyframes monsterHit {
+      0% { transform: translateX(0); }
+      40% { transform: translateX(12px) rotate(6deg); }
+      100% { transform: translateX(0); }
+    }
+
+    /* 飄浮傷害與特效層 */
+    .fx-layer { position: absolute; inset: 0; pointer-events: none; z-index: 10; overflow: hidden; }
+    .dmg-pop {
+      position: absolute; font-weight: 900; font-size: 1rem; color: #fff;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.85);
+      animation: floatUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .dmg-pop.crit { color: var(--gold); font-size: 1.28rem; }
+    .dmg-pop.skill { color: var(--miku); font-size: 1.38rem; }
+    .dmg-pop.cheer { color: var(--accent); font-size: 0.95rem; }
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0) scale(0.8); }
+      25% { transform: translateY(-14px) scale(1.12); }
+      100% { opacity: 0; transform: translateY(-48px) scale(0.95); }
+    }
+    .slash-fx {
+      position: absolute; right: 26px; bottom: 38px; width: 95px; height: 95px;
+      border-top: 4px solid var(--miku); border-right: 4px solid #fff;
+      border-radius: 50%; opacity: 0; transform: rotate(-20deg) scale(0.5);
+      animation: slashAnim 0.25s ease-out forwards;
+    }
+    @keyframes slashAnim {
+      0% { opacity: 1; transform: rotate(-35deg) scale(0.6); }
+      100% { opacity: 0; transform: rotate(35deg) scale(1.25); }
+    }
+
+    /* 應援 Fever 條 & 技能列 */
+    .fever-bar-wrap { margin-top: 6px; position: relative; z-index: 3; }
+    .fever-info { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--muted); margin-bottom: 3px; }
+    .fever-track { height: 7px; background: rgba(0,0,0,0.5); border-radius: 99px; overflow: hidden; }
+    .fever-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--miku), var(--accent), var(--gold)); transition: width 0.2s; }
+
+    .skills-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .skill-btn {
+      position: relative; overflow: hidden; background: var(--card-sub);
+      border: 1px solid rgba(57,197,187,0.3); border-radius: 14px;
+      padding: 8px 4px; text-align: center; cursor: pointer; color: var(--text);
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+    }
+    .skill-btn.locked { opacity: 0.45; border-color: rgba(255,255,255,0.08); cursor: not-allowed; }
+    .skill-icon { font-size: 1.3rem; }
+    .skill-name { font-size: 0.7rem; font-weight: 700; }
+    .skill-sub { font-size: 0.62rem; color: var(--miku); }
+    .skill-cd-mask {
+      position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.65);
+      height: 0%; transition: height 0.1s linear; pointer-events: none;
+    }
+
+    /* 運動等級進度條卡 */
+    .workout-link-card {
+      background: linear-gradient(135deg, rgba(57,197,187,0.14), rgba(255,117,151,0.14));
+      border: 1px solid rgba(57,197,187,0.3);
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    }
+
+    /* ================= 養成與裝備轉職 ================= */
+    .equip-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .equip-slot {
+      background: var(--card-sub); border-radius: 14px; padding: 10px 8px;
+      text-align: center; border: 1px solid rgba(255,255,255,0.08);
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .rarity-N { border-color: #94a3b8; color: #e2e8f0; }
+    .rarity-R { border-color: #4ade80; color: #4ade80; }
+    .rarity-SR { border-color: #60a5fa; color: #60a5fa; }
+    .rarity-SSR { border-color: #c084fc; color: #c084fc; box-shadow: 0 0 12px rgba(192,132,252,0.2); }
+    .rarity-UR { border-color: #fbbf24; color: #fbbf24; box-shadow: 0 0 15px rgba(251,191,36,0.3); }
+
+    .train-row {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--card-sub); padding: 10px 12px; border-radius: 12px; margin-bottom: 8px;
+    }
+    .job-card {
+      background: var(--card-sub); border-radius: 12px; padding: 10px 12px;
+      margin-bottom: 8px; border-left: 4px solid var(--muted);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .job-card.unlocked { border-left-color: var(--miku); background: rgba(57,197,187,0.1); }
+    .job-card.current { border-left-color: var(--gold); background: rgba(251,191,36,0.14); }
+
+    /* ================= 原本的健身與約會集點樣式 ================= */
+    .level-bar {
+      background: var(--card-sub); border-radius: 12px; padding: 8px 12px;
+      font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px; color: var(--gold);
+    }
+    .hearts-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 10px 0; }
     .heart-slot {
       aspect-ratio: 1; border-radius: 14px; background: rgba(255,255,255,0.05);
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.45rem; cursor: pointer; transition: transform 0.15s;
-      user-select: none;
+      font-size: 1.4rem; cursor: pointer; transition: transform 0.15s; user-select: none;
     }
     .heart-slot.active { background: rgba(255,117,151,0.22); transform: scale(1.04); }
     .unlock-banner {
       display: none; text-align: center; background: linear-gradient(135deg, #ff7597, #ff9a8b);
-      color: #16161e; font-weight: 800; padding: 12px; border-radius: 14px; margin-top: 10px;
+      color: #16161e; font-weight: 800; padding: 11px; border-radius: 14px; margin-top: 8px; font-size: 0.88rem;
     }
     .unlock-banner.show { display: block; animation: pop 0.4s ease; }
     @keyframes pop { 0% { transform: scale(0.9); } 70% { transform: scale(1.03); } 100% { transform: scale(1); } }
 
-    /* 計時器區 */
-    .timer-box { text-align: center; position: relative; }
-    .mode-switch {
-      display: inline-flex; background: var(--card-sub); border-radius: 99px; padding: 3px; margin-bottom: 12px;
-    }
+    .timer-box { text-align: center; }
+    .mode-switch { display: inline-flex; background: var(--card-sub); border-radius: 99px; padding: 3px; margin-bottom: 10px; }
     .mode-btn {
       padding: 5px 12px; border-radius: 99px; font-size: 0.78rem; font-weight: 700;
       background: transparent; color: var(--muted); border: none; cursor: pointer;
     }
     .mode-btn.active { background: var(--accent); color: #16161e; }
-    .phase-label { font-size: 0.95rem; font-weight: 700; color: var(--work); letter-spacing: 1px; }
+    .phase-label { font-size: 0.92rem; font-weight: 700; color: var(--work); letter-spacing: 1px; }
     .phase-label.rest { color: var(--rest); }
-    .exercise-name { font-size: 1.65rem; font-weight: 800; margin: 6px 0; min-height: 2.2rem; }
-    .time-display { font-size: 4.5rem; font-weight: 800; font-variant-numeric: tabular-nums; margin: 6px 0; line-height: 1; }
-    .round-info { color: var(--muted); font-size: 0.85rem; margin: 10px 0 16px; }
-    
-    /* 休息音樂盒 */
+    .exercise-name { font-size: 1.5rem; font-weight: 800; margin: 6px 0; min-height: 2rem; }
+    .time-display { font-size: 4.2rem; font-weight: 800; font-variant-numeric: tabular-nums; margin: 4px 0; line-height: 1; }
+    .round-info { color: var(--muted); font-size: 0.84rem; margin: 8px 0 14px; }
+
     .music-box {
       display: none; background: rgba(96, 165, 250, 0.12); border: 1px solid rgba(96, 165, 250, 0.3);
-      border-radius: 14px; padding: 10px; margin-bottom: 14px; font-size: 0.85rem;
+      border-radius: 14px; padding: 10px; margin-bottom: 12px; font-size: 0.84rem;
     }
     .music-box.show { display: block; }
     .yt-container { margin-top: 8px; border-radius: 10px; overflow: hidden; display: none; }
     .yt-container.show { display: block; }
 
-    .btn-row { display: flex; gap: 10px; }
-    button {
-      flex: 1; border: none; border-radius: 14px; padding: 14px;
-      font-size: 1rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s;
+    .btn-row { display: flex; gap: 8px; }
+    button.act-btn {
+      flex: 1; border: none; border-radius: 14px; padding: 13px;
+      font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s;
     }
-    button:active { opacity: 0.8; }
+    button.act-btn:active { opacity: 0.8; }
     .btn-primary { background: var(--accent); color: #16161e; }
+    .btn-miku { background: var(--miku); color: #0f172a; }
     .btn-secondary { background: rgba(255,255,255,0.1); color: var(--text); }
-    .btn-small { padding: 7px 10px; font-size: 0.78rem; flex: none; border-radius: 10px; }
+    .btn-small { padding: 6px 10px; font-size: 0.76rem; flex: none; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; }
 
-    /* 歷史紀錄與自訂設定區 */
     .log-list {
-      max-height: 130px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
-      font-size: 0.82rem; color: var(--muted); margin-top: 8px;
+      max-height: 125px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
+      font-size: 0.8rem; color: var(--muted); margin-top: 8px;
     }
     .log-item {
-      background: var(--card-sub); padding: 7px 12px; border-radius: 10px;
+      background: var(--card-sub); padding: 7px 11px; border-radius: 10px;
       display: flex; justify-content: space-between;
     }
-    .settings-panel { display: none; flex-direction: column; gap: 12px; margin-top: 12px; }
+    .settings-panel { display: none; flex-direction: column; gap: 10px; margin-top: 12px; }
     .settings-panel.open { display: flex; }
-    .field-group { display: flex; flex-direction: column; gap: 5px; font-size: 0.85rem; color: var(--muted); }
+    .field-group { display: flex; flex-direction: column; gap: 4px; font-size: 0.82rem; color: var(--muted); }
     input, textarea {
       background: var(--card-sub); border: 1px solid rgba(255,255,255,0.1);
-      color: var(--text); border-radius: 10px; padding: 9px 12px; font-size: 0.9rem; width: 100%;
+      color: var(--text); border-radius: 10px; padding: 8px 10px; font-size: 0.88rem; width: 100%;
     }
-    textarea { min-height: 110px; resize: vertical; line-height: 1.4; }
+    textarea { min-height: 95px; resize: vertical; line-height: 1.4; }
+
+    /* ================= 底部導覽列 ================= */
+    .bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(22, 24, 36, 0.96); backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex; justify-content: center; padding: 8px 12px 14px; z-index: 50;
+    }
+    .nav-inner { width: 100%; max-width: 450px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .nav-btn {
+      background: transparent; border: none; color: var(--muted);
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      padding: 6px 4px; border-radius: 14px; cursor: pointer; font-weight: 700; font-size: 0.76rem;
+      transition: all 0.2s;
+    }
+    .nav-btn.active { background: rgba(57, 197, 187, 0.16); color: var(--miku); }
+    .nav-btn.active.pink-tab { background: rgba(255, 117, 151, 0.16); color: var(--accent); }
+    .nav-icon { font-size: 1.25rem; }
+
+    /* 升級祝賀彈窗 */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.78); backdrop-filter: blur(4px);
+      display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: var(--card); border: 2px solid var(--miku); border-radius: 24px;
+      padding: 22px; max-width: 360px; width: 100%; text-align: center;
+      box-shadow: 0 0 35px rgba(57, 197, 187, 0.4); animation: pop 0.35s ease;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- 1. 果果約會集點卡 -->
-    <div class="card">
-      <div class="header-row">
-        <h1>❤️ 果果約會解鎖進度</h1>
-        <span class="badge" id="countBadge">0 / 15 次</span>
+    <!-- 頂部全域戰力 HUD -->
+    <div class="hud-bar">
+      <div class="hud-item">
+        <span class="hud-label" id="hudJobTitle">Lv.1 見習歌姬</span>
+        <span class="hud-val miku" id="hudPower">戰力 12</span>
       </div>
-      <div class="level-bar">
-        <span id="rankTitle">稱號：Lv.1 沙發預備軍</span>
-        <span id="totalLifetime">生涯累計：0 次</span>
+      <div class="hud-item">
+        <span class="hud-label">音律金幣</span>
+        <span class="hud-val gold" id="hudGold">0</span>
       </div>
-      <div class="hearts-grid" id="heartsGrid"></div>
-      <div class="unlock-banner" id="unlockBanner">🎉 集滿目標啦！快去跟果果提出約會吧！</div>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
-        <span style="font-size: 0.78rem; color: var(--muted);">排程：六、日、二、三</span>
-        <div style="display: flex; gap: 6px;">
-          <button class="btn-secondary btn-small" onclick="adjustCount(-1)">-1</button>
-          <button class="btn-secondary btn-small" onclick="adjustCount(1)">+1</button>
-          <button class="btn-secondary btn-small" onclick="resetMonth()">重置本月</button>
-        </div>
+      <div class="hud-item">
+        <span class="hud-label">果果約會集點</span>
+        <span class="hud-val" style="color:var(--accent);" id="hudHearts">0 / 15 ❤️</span>
       </div>
     </div>
 
-    <!-- 2. 黃金四寶計時器 -->
-    <div class="card timer-box">
-      <div class="mode-switch">
-        <button class="mode-btn active" id="modeFull" onclick="setMode('full')">🔥 完整 10 關</button>
-        <button class="mode-btn" id="modeLazy" onclick="setMode('lazy')">🦥 累死保底 4 關</button>
-      </div>
-      <div class="phase-label" id="phaseLabel">準備開始</div>
-      <div class="exercise-name" id="exerciseName">徒手深蹲</div>
-      <div class="time-display" id="timeDisplay">00:40</div>
-      <div class="round-info" id="roundInfo">進度：第 1 / 10 關</div>
-
-      <!-- 休息音樂盒 -->
-      <div class="music-box" id="musicBox">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span>🎵 休息時間 BGM：<strong id="bgmStatus">8-bit 輕快電玩曲</strong></span>
-          <button class="btn-secondary btn-small" id="ytPlayBtn" onclick="openRandomYT()">切 YT 副歌 ▶</button>
+    <!-- ==================== 分頁 1：主畫面冒險戰場 ==================== -->
+    <div class="tab-page active" id="pageBattle">
+      <div class="arena-card" id="arenaCard" onclick="cheerMiku(event)">
+        <div class="stage-header">
+          <div class="stage-pill" id="stageLabel">第 1 關・音律草原</div>
+          <div id="bossControlArea">
+            <span class="badge" id="dpsLabel">DPS 13/秒</span>
+          </div>
         </div>
-        <div class="yt-container" id="ytContainer"></div>
+
+        <div class="battle-field">
+          <div class="stage-floor"></div>
+
+          <!-- 精緻向量可愛初音未來 SVG -->
+          <div class="miku-wrapper" id="mikuSprite">
+            <svg viewBox="0 0 160 190" width="135" height="165">
+              <defs>
+                <linearGradient id="hairGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#5eead4" />
+                  <stop offset="55%" stop-color="#2dd4bf" />
+                  <stop offset="100%" stop-color="#0d9488" />
+                </linearGradient>
+                <linearGradient id="auraGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#39c5bb" stop-opacity="0.55" />
+                  <stop offset="100%" stop-color="#ff7597" stop-opacity="0.45" />
+                </linearGradient>
+                <linearGradient id="leekGrad" x1="0" y1="1" x2="0" y2="0">
+                  <stop offset="0%" stop-color="#f8fafc" />
+                  <stop offset="45%" stop-color="#bbf7d0" />
+                  <stop offset="100%" stop-color="#22c55e" />
+                </linearGradient>
+              </defs>
+
+              <!-- 轉職專屬背後光環/全息羽翼 (依轉職動態顯示) -->
+              <g id="mikuJobAura"></g>
+
+              <!-- 左雙馬尾 (後方飄逸) -->
+              <g class="twintail-left">
+                <path d="M56 46 C26 52, 16 108, 22 162 C32 152, 36 122, 46 88 Z" fill="url(#hairGrad)" />
+                <path d="M54 48 C34 58, 28 102, 32 145" stroke="#99f6e4" stroke-width="2.5" fill="none" opacity="0.7" />
+              </g>
+
+              <!-- 右雙馬尾 (後方飄逸) -->
+              <g class="twintail-right">
+                <path d="M104 46 C134 52, 144 108, 138 162 C128 152, 124 122, 114 88 Z" fill="url(#hairGrad)" />
+                <path d="M106 48 C126 58, 132 102, 128 145" stroke="#99f6e4" stroke-width="2.5" fill="none" opacity="0.7" />
+              </g>
+
+              <!-- 雙腿與過膝長靴 -->
+              <rect x="67" y="132" width="9" height="44" rx="4" fill="#ffe4d6" />
+              <rect x="84" y="132" width="9" height="44" rx="4" fill="#ffe4d6" />
+              <path d="M66 146 L77 146 L77 178 L64 178 Z" fill="#1e293b" />
+              <path d="M83 146 L94 146 L96 178 L83 178 Z" fill="#1e293b" />
+              <rect x="66" y="146" width="11" height="3" fill="#39c5bb" />
+              <rect x="83" y="146" width="11" height="3" fill="#39c5bb" />
+
+              <!-- 百褶裙 -->
+              <path d="M62 114 L98 114 L106 136 L54 136 Z" fill="#1e293b" />
+              <path d="M55 133 L105 133 L106 136 L54 136 Z" fill="#39c5bb" />
+              <line x1="70" y1="114" x2="67" y2="136" stroke="#0f172a" stroke-width="1.5" />
+              <line x1="80" y1="114" x2="80" y2="136" stroke="#0f172a" stroke-width="1.5" />
+              <line x1="90" y1="114" x2="93" y2="136" stroke="#0f172a" stroke-width="1.5" />
+
+              <!-- 上衣與初音領帶 -->
+              <path d="M65 82 L95 82 L98 115 L62 115 Z" fill="#e2e8f0" />
+              <path d="M65 82 L74 82 L80 91 L86 82 L95 82 L93 96 L67 96 Z" fill="#cbd5e1" />
+              <!-- 領帶 -->
+              <polygon points="80,87 76,94 78,111 80,114 82,111 84,94" fill="#39c5bb" />
+
+              <!-- 左手袖套 -->
+              <path d="M64 84 L51 110 L58 114 L67 92 Z" fill="#1e293b" />
+              <circle cx="54" cy="112" r="4" fill="#ffe4d6" />
+
+              <!-- 頭部與可愛五官 -->
+              <circle cx="80" cy="56" r="24" fill="#ffe8dc" />
+              <!-- 腮紅 -->
+              <ellipse cx="67" cy="63" rx="4" ry="2.2" fill="#ff8fab" opacity="0.75" />
+              <ellipse cx="93" cy="63" rx="4" ry="2.2" fill="#ff8fab" opacity="0.75" />
+              <!-- 大眼睛 (初音蒼藍瞳) -->
+              <ellipse cx="70" cy="57" rx="4.2" ry="5.2" fill="#0f172a" />
+              <ellipse cx="90" cy="57" rx="4.2" ry="5.2" fill="#0f172a" />
+              <ellipse cx="70" cy="58.5" rx="3" ry="3.2" fill="#2dd4bf" />
+              <ellipse cx="90" cy="58.5" rx="3" ry="3.2" fill="#2dd4bf" />
+              <circle cx="68.8" cy="55" r="1.7" fill="#ffffff" />
+              <circle cx="88.8" cy="55" r="1.7" fill="#ffffff" />
+              <!-- 微笑小嘴 -->
+              <path d="M77 67 Q80 71 83 67" stroke="#e11d48" stroke-width="1.8" fill="none" stroke-linecap="round" />
+
+              <!-- 前髮瀏海與側髮 -->
+              <path d="M55 54 C55 32, 105 32, 105 54 C100 45, 94 44, 90 52 C86 43, 82 43, 80 53 C77 43, 72 43, 69 52 C65 44, 60 45, 55 54 Z" fill="url(#hairGrad)" />
+              <path d="M55 50 C53 64, 55 76, 59 82 C60 72, 60 62, 61 52 Z" fill="url(#hairGrad)" />
+              <path d="M105 50 C107 64, 105 76, 101 82 C100 72, 100 62, 99 52 Z" fill="url(#hairGrad)" />
+
+              <!-- 髮飾方塊 (黑底粉框) -->
+              <rect x="52" y="38" width="9" height="12" rx="2" transform="rotate(-18 52 38)" fill="#111827" stroke="#ff2a85" stroke-width="1.6" />
+              <rect x="99" y="36" width="9" height="12" rx="2" transform="rotate(18 99 36)" fill="#111827" stroke="#ff2a85" stroke-width="1.6" />
+              <!-- 耳機麥克風 -->
+              <rect x="51" y="52" width="5" height="11" rx="2" fill="#1e293b" stroke="#39c5bb" stroke-width="1" />
+              <path d="M53 62 Q62 68 72 67" stroke="#39c5bb" stroke-width="1.4" fill="none" />
+
+              <!-- 右手與動態武器 (依裝備變化) -->
+              <path d="M95 84 L112 103 L106 108 L92 92 Z" fill="#1e293b" />
+              <circle cx="110" cy="105" r="4.2" fill="#ffe4d6" />
+              <g id="mikuWeaponSvg"></g>
+            </svg>
+          </div>
+
+          <!-- 怪物 SVG 與血條 -->
+          <div class="monster-wrapper">
+            <div class="monster-name" id="monsterName">走音史萊姆</div>
+            <div class="hp-bar-bg">
+              <div class="hp-bar-fill" id="monsterHpBar"></div>
+            </div>
+            <div style="font-size:0.68rem; color:#cbd5e1; margin-bottom:2px;" id="monsterHpText">45 / 45</div>
+            <div class="monster-svg-box" id="monsterSprite"></div>
+          </div>
+        </div>
+
+        <!-- 應援 Fever 條 -->
+        <div class="fever-bar-wrap">
+          <div class="fever-info">
+            <span id="feverStatusText">✨ 點擊舞台揮舞螢光棒應援！</span>
+            <span id="feverPctText">0%</span>
+          </div>
+          <div class="fever-track">
+            <div class="fever-fill" id="feverFill"></div>
+          </div>
+        </div>
+
+        <!-- 飄浮傷害特效層 -->
+        <div class="fx-layer" id="fxLayer"></div>
       </div>
 
-      <div class="btn-row">
-        <button class="btn-primary" id="startBtn" onclick="toggleTimer()">開始運動</button>
-        <button class="btn-secondary" onclick="skipStep()">跳過本段</button>
-        <button class="btn-secondary" onclick="resetTimer()">重置</button>
+      <!-- 主動技能快捷列 -->
+      <div class="card" style="padding: 12px;">
+        <div class="header-row" style="margin-bottom: 8px;">
+          <h1>⚡ 音律主動技（自動施放 / 點擊觸發）</h1>
+          <span class="badge gold" id="multBadge">運動倍率 ×1.00</span>
+        </div>
+        <div class="skills-grid" id="skillsGrid"></div>
+      </div>
+
+      <!-- 運動等級高回饋進度卡 -->
+      <div class="card workout-link-card">
+        <div style="flex:1;">
+          <div style="font-size: 0.88rem; font-weight: 800; color: var(--miku);" id="levelRuleStatus">
+            🌱 今日尚未運動：完成一次運動立即升至 Lv.2！
+          </div>
+          <div style="font-size: 0.75rem; color: var(--muted); margin-top: 4px;" id="nextUnlockHint">
+            下一里程碑：Lv.3 解鎖轉職【電子精靈】＋ 雙重音符連彈
+          </div>
+        </div>
+        <button class="btn-small btn-miku" onclick="switchTab('fitness')">去運動升級 ▶</button>
       </div>
     </div>
 
-    <!-- 3. 打卡紀錄 & 自訂設定 -->
-    <div class="card">
-      <div class="header-row" style="margin-bottom: 0;">
-        <h1>📅 運動打卡紀錄</h1>
-        <button class="btn-secondary btn-small" onclick="toggleSettings()">⚙️ 自訂設定</button>
+    <!-- ==================== 分頁 2：養成、裝備與轉職 ==================== -->
+    <div class="tab-page" id="pageGrowth">
+      <!-- 裝備系統 -->
+      <div class="card">
+        <div class="header-row">
+          <h1>🎒 戰姬裝備欄（強化上限 Lv.<span id="maxEnhanceCap">5</span>）</h1>
+          <button class="btn-small btn-miku" onclick="summonGear()">🎁 音律鍛造 (<span id="gachaCost">100</span>金)</button>
+        </div>
+        <div class="equip-grid" id="equipGrid"></div>
       </div>
-      <div class="log-list" id="logList"></div>
 
-      <!-- 自訂設定折疊區 -->
-      <div class="settings-panel" id="settingsPanel">
-        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; margin: 4px 0;">
-        <div style="display: flex; gap: 10px;">
-          <div class="field-group" style="flex:1;">
-            <label>動作秒數</label>
-            <input type="number" id="cfgWorkSec" min="5" max="300" />
+      <!-- 金幣訓練場 (不運動也能慢慢變強) -->
+      <div class="card">
+        <div class="header-row">
+          <h1>🎵 音律基礎訓練（金幣強化）</h1>
+          <span class="badge">常駐有效</span>
+        </div>
+        <div id="trainingList"></div>
+      </div>
+
+      <!-- 運動等級轉職樹 (運動才解鎖的高回饋核心) -->
+      <div class="card">
+        <div class="header-row">
+          <h1>👑 運動等級轉職殿堂</h1>
+          <span class="badge pink">每日 06:00 重置升級</span>
+        </div>
+        <div style="font-size:0.76rem; color:var(--muted); margin-bottom:10px;">
+          角色等級嚴格綁定「有效運動天數」（每天最多升 1 等），等級提供全屬性獨立乘區與華麗轉職外觀！
+        </div>
+        <div id="jobTreeList"></div>
+      </div>
+    </div>
+
+    <!-- ==================== 分頁 3：果果約會集點 & 10分鐘運動 ==================== -->
+    <div class="tab-page" id="pageFitness">
+      <!-- 1. 果果約會集點卡 -->
+      <div class="card">
+        <div class="header-row">
+          <h1>❤️ 果果約會解鎖進度</h1>
+          <span class="badge pink" id="countBadge">0 / 15 次</span>
+        </div>
+        <div class="level-bar">
+          <span id="rankTitle">稱號：Lv.1 剛離開電腦椅的勇者 🌱</span>
+          <span id="totalLifetime">生涯累計：0 次</span>
+        </div>
+        <div class="hearts-grid" id="heartsGrid"></div>
+        <div class="unlock-banner" id="unlockBanner">🎉 集滿目標啦！快去跟果果提出約會吧！</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+          <span style="font-size: 0.78rem; color: var(--muted);">排程：六、日、二、三</span>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn-secondary btn-small" onclick="adjustCount(-1)">-1</button>
+            <button class="btn-secondary btn-small" onclick="adjustCount(1)">+1</button>
+            <button class="btn-secondary btn-small" onclick="resetMonth()">重置本月</button>
           </div>
-          <div class="field-group" style="flex:1;">
-            <label>休息秒數</label>
-            <input type="number" id="cfgRestSec" min="5" max="180" />
+        </div>
+      </div>
+
+      <!-- 2. 黃金四寶計時器 -->
+      <div class="card timer-box">
+        <div class="mode-switch">
+          <button class="mode-btn active" id="modeFull" onclick="setMode('full')">🔥 完整 10 關</button>
+          <button class="mode-btn" id="modeLazy" onclick="setMode('lazy')">🦥 累死保底 4 關</button>
+        </div>
+        <div class="phase-label" id="phaseLabel">準備開始</div>
+        <div class="exercise-name" id="exerciseName">徒手深蹲</div>
+        <div class="time-display" id="timeDisplay">00:40</div>
+        <div class="round-info" id="roundInfo">進度：第 1 / 10 關</div>
+
+        <!-- 休息音樂盒 -->
+        <div class="music-box" id="musicBox">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span>🎵 休息時間 BGM：<strong id="bgmStatus">8-bit 輕快電玩曲</strong></span>
+            <button class="btn-secondary btn-small" id="ytPlayBtn" onclick="openRandomYT()">切 YT 副歌 ▶</button>
           </div>
-          <div class="field-group" style="flex:1;">
-            <label>約會門檻(次)</label>
-            <input type="number" id="cfgTarget" min="1" max="31" />
+          <div class="yt-container" id="ytContainer"></div>
+        </div>
+
+        <div class="btn-row">
+          <button class="act-btn btn-primary" id="startBtn" onclick="toggleTimer()">開始運動</button>
+          <button class="act-btn btn-secondary" onclick="skipStep()">跳過本段</button>
+          <button class="act-btn btn-secondary" onclick="resetTimer()">重置</button>
+        </div>
+      </div>
+
+      <!-- 3. 打卡紀錄 & 自訂設定 -->
+      <div class="card">
+        <div class="header-row" style="margin-bottom: 0;">
+          <h1>📅 運動打卡紀錄</h1>
+          <button class="btn-secondary btn-small" onclick="toggleSettings()">⚙️ 自訂設定</button>
+        </div>
+        <div class="log-list" id="logList"></div>
+
+        <!-- 自訂設定折疊區 -->
+        <div class="settings-panel" id="settingsPanel">
+          <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; margin: 4px 0;">
+          <div style="display: flex; gap: 10px;">
+            <div class="field-group" style="flex:1;">
+              <label>動作秒數</label>
+              <input type="number" id="cfgWorkSec" min="5" max="300" />
+            </div>
+            <div class="field-group" style="flex:1;">
+              <label>休息秒數</label>
+              <input type="number" id="cfgRestSec" min="5" max="180" />
+            </div>
+            <div class="field-group" style="flex:1;">
+              <label>約會門檻(次)</label>
+              <input type="number" id="cfgTarget" min="1" max="31" />
+            </div>
           </div>
+          <div class="field-group">
+            <label>自訂動作清單（一行一關，保底模式會抓前 4 行）</label>
+            <textarea id="cfgExercises"></textarea>
+          </div>
+          <div class="field-group">
+            <label>休息隨機 YouTube 歌單（一行一個 YT 網址，可加 &t=60s 指定副歌秒數）</label>
+            <textarea id="cfgYtLinks" style="min-height: 75px;"></textarea>
+          </div>
+          <div class="field-group" style="flex-direction: row; align-items: center; gap: 8px;">
+            <input type="checkbox" id="cfgAutoBgm" style="width: auto;" />
+            <label for="cfgAutoBgm">休息 20 秒時自動播放內建 8-bit 輕快電玩音樂</label>
+          </div>
+          <button class="act-btn btn-primary" onclick="saveSettings()">💾 儲存自訂設定</button>
+          <button class="act-btn btn-miku" onclick="simulateWorkoutComplete()" style="margin-top:4px;">🧪 測試：模擬完成今日運動（檢視升級）</button>
         </div>
-        <div class="field-group">
-          <label>自訂動作清單（一行一關，保底模式會抓前 4 行）</label>
-          <textarea id="cfgExercises"></textarea>
-        </div>
-        <div class="field-group">
-          <label>休息隨機 YouTube 歌單（一行一個 YT 網址，可加 &t=60s 指定副歌秒數）</label>
-          <textarea id="cfgYtLinks" style="min-height: 75px;"></textarea>
-        </div>
-        <div class="field-group" style="flex-direction: row; align-items: center; gap: 8px;">
-          <input type="checkbox" id="cfgAutoBgm" style="width: auto;" />
-          <label for="cfgAutoBgm">休息 20 秒時自動播放內建 8-bit 輕快電玩音樂</label>
-        </div>
-        <button class="btn-primary" onclick="saveSettings()">💾 儲存自訂設定</button>
       </div>
     </div>
   </div>
 
+  <!-- 底部三頁籤導覽 -->
+  <nav class="bottom-nav">
+    <div class="nav-inner">
+      <button class="nav-btn active" id="navBattle" onclick="switchTab('battle')">
+        <span class="nav-icon">⚔️</span>
+        <span>冒險戰場</span>
+      </button>
+      <button class="nav-btn" id="navGrowth" onclick="switchTab('growth')">
+        <span class="nav-icon">👑</span>
+        <span>養成轉職</span>
+      </button>
+      <button class="nav-btn" id="navFitness" onclick="switchTab('fitness')">
+        <span class="nav-icon">❤️</span>
+        <span>運動集點</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- 運動升級祝賀彈窗 -->
+  <div class="modal-overlay" id="levelUpModal">
+    <div class="modal-box">
+      <div style="font-size: 2.6rem; margin-bottom: 6px;">🎉✨👑</div>
+      <h2 style="margin: 0 0 8px; color: var(--miku); font-size: 1.3rem;" id="modalTitle">LEVEL UP! Lv.2</h2>
+      <p style="font-size: 0.88rem; color: var(--text); line-height: 1.5; margin: 0 0 14px;" id="modalDesc"></p>
+      <button class="act-btn btn-miku" style="width: 100%;" onclick="closeLevelModal()">太神啦！收下戰力</button>
+    </div>
+  </div>
+
   <script>
-    // 預設設定值
+    /* =========================================================================
+       1. 核心資料與儲存狀態 (相容舊版 localStorage)
+       ========================================================================= */
     const DEFAULT_CONFIG = {
       workSec: 40,
       restSec: 20,
@@ -236,7 +683,692 @@
     let logs = JSON.parse(localStorage.getItem('guoguo_logs') || '[]');
     let isLazyMode = false;
 
-    // 稱號系統
+    // 每日早上 06:00 換日線計算
+    function getFitnessDayKey(dateObj = new Date()) {
+      const shifted = new Date(dateObj.getTime() - 6 * 60 * 60 * 1000);
+      const y = shifted.getFullYear();
+      const m = String(shifted.getMonth() + 1).padStart(2, '0');
+      const d = String(shifted.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    // RPG 狀態初始化 (完全不運動則永遠 Lv.1)
+    const DEFAULT_RPG = {
+      level: 1,
+      lastLevelUpDayKey: "",
+      gold: 80,
+      stage: 1,
+      maxStage: 1,
+      fightingBoss: false,
+      bossTimer: 30,
+      dopamineEndTime: 0, // 運動後 30 分鐘狂熱時間戳
+      lastSaveTime: Date.now(),
+      training: { atk: 0, crit: 0, cdmg: 0, gold: 0 },
+      equip: {
+        weapon: { name: "新鮮綠蔥", rarity: "N", baseAtk: 6, enhance: 0 },
+        outfit: { name: "經典歌姬服", rarity: "N", baseAtk: 4, enhance: 0 },
+        acc:    { name: "蒼藍耳麥", rarity: "N", baseAtk: 3, enhance: 0 }
+      }
+    };
+
+    let rpg = Object.assign({}, DEFAULT_RPG, JSON.parse(localStorage.getItem('miku_rpg_v1') || '{}'));
+    rpg.training = Object.assign({}, DEFAULT_RPG.training, rpg.training);
+    rpg.equip = Object.assign({}, DEFAULT_RPG.equip, rpg.equip);
+
+    function saveRpg() {
+      rpg.lastSaveTime = Date.now();
+      localStorage.setItem('miku_rpg_v1', JSON.stringify(rpg));
+    }
+
+    /* =========================================================================
+       2. 轉職、技能、怪物圖鑑與數值公式
+       ========================================================================= */
+    const JOBS = [
+      { minLv: 1,  title: "見習歌姬",       mult: 1.0,  desc: "手握翠綠大蔥的初音，踏出音律冒險第一步。" },
+      { minLv: 3,  title: "電子精靈",       mult: 1.35, desc: "全屬性 ×1.35！解鎖技能【雙重音符連彈】與蒼藍光環。" },
+      { minLv: 6,  title: "蒼藍音律戰姬",   mult: 1.85, desc: "全屬性 ×1.85！解鎖領域技【39應援狂熱】與全息光翼。" },
+      { minLv: 10, title: "世界第一公主殿下", mult: 2.6,  desc: "全屬性 ×2.60！解鎖終極奧義【千本櫻・萬象音爆】。" },
+      { minLv: 15, title: "未來創世女神",   mult: 3.8,  desc: "全屬性 ×3.80！常駐女神神光，金幣掉落額外翻倍！" }
+    ];
+
+    const SKILLS = [
+      { id: 0, name: "蔥擊波",   icon: "🥬", unlockLv: 1,  cd: 5,  desc: "240% 單體重擊" },
+      { id: 1, name: "音符連彈", icon: "🎵", unlockLv: 3,  cd: 8,  desc: "4段 95% 連擊" },
+      { id: 2, name: "39領域",   icon: "💠", unlockLv: 6,  cd: 14, desc: "8秒攻速+60%" },
+      { id: 3, name: "千本櫻",   icon: "🌸", unlockLv: 10, cd: 18, desc: "680% 櫻花音爆" }
+    ];
+
+    let skillCooldowns = [0, 0, 0, 0];
+    let buff39Timer = 0;
+    let feverCharge = 0; // 0 ~ 100
+    let feverTimer = 0;
+
+    function getCurrentJob() {
+      let cur = JOBS[0];
+      for (const j of JOBS) {
+        if (rpg.level >= j.minLv) cur = j;
+      }
+      return cur;
+    }
+
+    function getMaxEnhanceCap() {
+      return rpg.level * 5;
+    }
+
+    function calcStats() {
+      const job = getCurrentJob();
+      const eq = rpg.equip;
+      const eqAtk =
+        Math.floor(eq.weapon.baseAtk * (1 + eq.weapon.enhance * 0.25)) +
+        Math.floor(eq.outfit.baseAtk * (1 + eq.outfit.enhance * 0.25)) +
+        Math.floor(eq.acc.baseAtk * (1 + eq.acc.enhance * 0.25));
+
+      const baseAtk = 10 + rpg.training.atk * 6 + eqAtk;
+      // 運動等級高回饋：每升 1 等獲得 +35% 獨立乘區
+      const levelMult = 1 + (rpg.level - 1) * 0.35;
+      const totalAtk = Math.floor(baseAtk * levelMult * job.mult);
+
+      const critRate = Math.min(85, 5 + rpg.training.crit * 1.5 + (buff39Timer > 0 ? 25 : 0));
+      const critDmg = 1.5 + rpg.training.cdmg * 0.12;
+      const isDopamine = Date.now() < rpg.dopamineEndTime;
+
+      let aps = 1.15;
+      if (buff39Timer > 0) aps *= 1.6;
+      if (feverTimer > 0) aps *= 1.75;
+      if (isDopamine) aps *= 1.5;
+
+      const goldMult = (1 + rpg.training.gold * 0.15) * (rpg.level >= 15 ? 2 : 1) * (isDopamine ? 2 : 1);
+      const estDps = Math.floor(totalAtk * aps * (1 + (critRate / 100) * (critDmg - 1)));
+
+      return { totalAtk, critRate, critDmg, aps, levelMult, job, estDps, goldMult, isDopamine };
+    }
+
+    /* =========================================================================
+       3. 動態 SVG 外觀更新 (初音武器與轉職光環 + 可愛怪物)
+       ========================================================================= */
+    function renderMikuVisuals() {
+      const auraGroup = document.getElementById('mikuJobAura');
+      const weaponGroup = document.getElementById('mikuWeaponSvg');
+      const lv = rpg.level;
+
+      // 1. 轉職光環與羽翼
+      let auraHtml = '';
+      if (lv >= 3) {
+        auraHtml += `<circle cx="80" cy="95" r="56" fill="none" stroke="#39c5bb" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.65" />`;
+      }
+      if (lv >= 6) {
+        auraHtml += `
+          <path d="M55 92 C22 72, 16 105, 48 112 Z" fill="url(#auraGrad)" />
+          <path d="M105 92 C138 72, 144 105, 112 112 Z" fill="url(#auraGrad)" />
+        `;
+      }
+      if (lv >= 10) {
+        auraHtml += `<ellipse cx="80" cy="24" rx="22" ry="5" fill="none" stroke="#fbbf24" stroke-width="2.2" />`;
+      }
+      auraGroup.innerHTML = auraHtml;
+
+      // 2. 武器造型依稀有度變化
+      const r = rpg.equip.weapon.rarity;
+      if (r === 'N' || r === 'R') {
+        // 經典初音大蔥
+        weaponGroup.innerHTML = `
+          <g transform="rotate(28 110 105)">
+            <rect x="107" y="64" width="6" height="52" rx="3" fill="url(#leekGrad)" />
+            <path d="M107 72 L101 58 L109 68 Z" fill="#22c55e" />
+            <path d="M113 72 L119 58 L111 68 Z" fill="#16a34a" />
+          </g>`;
+      } else if (r === 'SR') {
+        // 蒼藍音律光劍
+        weaponGroup.innerHTML = `
+          <g transform="rotate(32 110 105)">
+            <rect x="108" y="54" width="4" height="54" rx="2" fill="#e0f2fe" stroke="#39c5bb" stroke-width="2.5" />
+            <rect x="104" y="102" width="12" height="4" rx="2" fill="#1e293b" />
+          </g>`;
+      } else {
+        // SSR / UR 未來星辰權杖
+        weaponGroup.innerHTML = `
+          <g transform="rotate(30 110 105)">
+            <line x1="110" y1="52" x2="110" y2="118" stroke="#fbbf24" stroke-width="3.5" />
+            <polygon points="110,42 115,52 125,52 117,58 120,68 110,62 100,68 103,58 95,52 105,52" fill="#39c5bb" stroke="#fbbf24" stroke-width="1.5" />
+          </g>`;
+      }
+    }
+
+    const MONSTER_TYPES = [
+      { name: "走音史萊姆", color: "#60a5fa", eye: "#fef08a" },
+      { name: "卡頓小精靈", color: "#a78bfa", eye: "#f43f5e" },
+      { name: "熬夜黑眼圈怪", color: "#64748b", eye: "#38bdf8" },
+      { name: "沙發馬鈴薯精", color: "#f59e0b", eye: "#ffffff" },
+      { name: "暴食宵夜魔王", color: "#f43f5e", eye: "#fbbf24" }
+    ];
+
+    let curMonster = { name: "", maxHp: 45, hp: 45, isBoss: false };
+
+    function spawnMonster() {
+      const isBoss = rpg.fightingBoss;
+      const baseHp = Math.floor(42 * Math.pow(1.24, rpg.stage - 1));
+      const maxHp = isBoss ? baseHp * 5 : baseHp;
+      const mType = isBoss ? MONSTER_TYPES[4] : MONSTER_TYPES[(rpg.stage - 1) % 4];
+
+      curMonster = {
+        name: isBoss ? `👑 BOSS・${mType.name}` : mType.name,
+        maxHp,
+        hp: maxHp,
+        isBoss
+      };
+      if (isBoss) rpg.bossTimer = 30;
+
+      document.getElementById('monsterName').textContent = curMonster.name;
+      document.getElementById('monsterSprite').innerHTML = `
+        <svg viewBox="0 0 100 100" width="${isBoss ? 105 : 86}" height="${isBoss ? 105 : 86}">
+          <path d="M18 76 C12 42, 34 22, 50 22 C66 22, 88 42, 82 76 C76 88, 24 88, 18 76 Z" fill="${mType.color}" />
+          <path d="M28 36 Q42 26 56 32" stroke="#fff" stroke-width="3" fill="none" opacity="0.45" stroke-linecap="round" />
+          ${isBoss ? '<polygon points="32,22 40,8 50,20 60,8 68,22" fill="#fbbf24" />' : ''}
+          <circle cx="38" cy="54" r="6" fill="#0f172a" />
+          <circle cx="62" cy="54" r="6" fill="#0f172a" />
+          <circle cx="39" cy="52" r="2.2" fill="${mType.eye}" />
+          <circle cx="63" cy="52" r="2.2" fill="${mType.eye}" />
+          <path d="M42 68 Q50 62 58 68" stroke="#0f172a" stroke-width="2.5" fill="none" stroke-linecap="round" />
+        </svg>
+      `;
+      updateMonsterHpUI();
+    }
+
+    function updateMonsterHpUI() {
+      const pct = Math.max(0, (curMonster.hp / curMonster.maxHp) * 100);
+      document.getElementById('monsterHpBar').style.width = pct + '%';
+      document.getElementById('monsterHpText').textContent = `${formatNum(Math.max(0, Math.ceil(curMonster.hp)))} / ${formatNum(curMonster.maxHp)}`;
+    }
+
+    /* =========================================================================
+       4. 戰鬥迴圈、特效、應援與掉落系統
+       ========================================================================= */
+    function formatNum(n) {
+      if (n >= 1e8) return (n / 1e8).toFixed(2) + '億';
+      if (n >= 1e4) return (n / 1e4).toFixed(1) + '萬';
+      return String(Math.floor(n));
+    }
+
+    function spawnPopText(text, type = '') {
+      const fx = document.getElementById('fxLayer');
+      const el = document.createElement('div');
+      el.className = 'dmg-pop ' + type;
+      el.textContent = text;
+      el.style.right = (30 + Math.random() * 55) + 'px';
+      el.style.top = (42 + Math.random() * 45) + 'px';
+      fx.appendChild(el);
+      setTimeout(() => el.remove(), 750);
+    }
+
+    function triggerSlashFx() {
+      const fx = document.getElementById('fxLayer');
+      const s = document.createElement('div');
+      s.className = 'slash-fx';
+      fx.appendChild(s);
+      setTimeout(() => s.remove(), 260);
+    }
+
+    function performAttack(mult = 1.0, skillName = null) {
+      const st = calcStats();
+      const isCrit = Math.random() * 100 < st.critRate;
+      let dmg = Math.floor(st.totalAtk * mult * (0.92 + Math.random() * 0.16));
+      if (isCrit) dmg = Math.floor(dmg * st.critDmg);
+
+      // 動作動畫
+      const mikuEl = document.getElementById('mikuSprite');
+      mikuEl.classList.remove('attacking');
+      void mikuEl.offsetWidth;
+      mikuEl.classList.add('attacking');
+
+      const monEl = document.getElementById('monsterSprite');
+      monEl.classList.remove('hit');
+      void monEl.offsetWidth;
+      monEl.classList.add('hit');
+
+      triggerSlashFx();
+      curMonster.hp -= dmg;
+
+      if (skillName) {
+        spawnPopText(`${skillName} -${formatNum(dmg)}!`, 'skill');
+      } else if (isCrit) {
+        spawnPopText(`💥${formatNum(dmg)}!`, 'crit');
+      } else {
+        spawnPopText(`-${formatNum(dmg)}`);
+      }
+
+      if (curMonster.hp <= 0) {
+        onMonsterDefeated(st);
+      } else {
+        updateMonsterHpUI();
+      }
+    }
+
+    function onMonsterDefeated(st) {
+      const baseGold = Math.floor((8 + rpg.stage * 4.5) * st.goldMult * (curMonster.isBoss ? 4 : 1));
+      rpg.gold += baseGold;
+      spawnPopText(`+${formatNum(baseGold)}💰`, 'cheer');
+
+      // 機率直接掉落裝備 (8%)
+      if (Math.random() < 0.08) {
+        grantRandomGear(true);
+      }
+
+      if (curMonster.isBoss) {
+        rpg.fightingBoss = false;
+        rpg.stage += 1;
+        rpg.maxStage = Math.max(rpg.maxStage, rpg.stage);
+      } else if (rpg.stage % 5 !== 0) {
+        // 非 Boss 關卡直接推進，每 5 關停在 Boss 前讓玩家挑戰
+        rpg.stage += 1;
+        rpg.maxStage = Math.max(rpg.maxStage, rpg.stage);
+      }
+      spawnMonster();
+      updateAllUI();
+    }
+
+    function startBossFight() {
+      rpg.fightingBoss = true;
+      spawnMonster();
+      updateAllUI();
+    }
+
+    function castSkill(idx) {
+      const sk = SKILLS[idx];
+      if (rpg.level < sk.unlockLv) return;
+      if (skillCooldowns[idx] > 0) return;
+
+      skillCooldowns[idx] = sk.cd;
+      if (idx === 0) performAttack(2.4, "🥬 蔥擊波");
+      if (idx === 1) {
+        performAttack(1.0, "🎵 音符連彈");
+        setTimeout(() => performAttack(1.0), 120);
+        setTimeout(() => performAttack(1.1), 240);
+        setTimeout(() => performAttack(1.2), 360);
+      }
+      if (idx === 2) {
+        buff39Timer = 8;
+        spawnPopText("💠 39領域展開！攻速暴增", "skill");
+      }
+      if (idx === 3) {
+        performAttack(6.8, "🌸 千本櫻終焉曲");
+      }
+      updateSkillsUI();
+    }
+
+    // 點擊舞台應援集氣
+    function cheerMiku(e) {
+      if (e.target.tagName === 'BUTTON') return;
+      const notes = ["💚 應援 +1", "🎶 Miku加油！", "✨ 螢光棒揮舞", "💫 音律共振"];
+      spawnPopText(notes[Math.floor(Math.random() * notes.length)], 'cheer');
+      if (feverTimer <= 0) {
+        feverCharge = Math.min(100, feverCharge + 14);
+        if (feverCharge >= 100) {
+          feverTimer = 10;
+          feverCharge = 0;
+          spawnPopText("🔥 MIKU FEVER TIME!!", "skill");
+        }
+      }
+      updateFeverUI();
+    }
+
+    /* =========================================================================
+       5. 裝備鍛造與金幣訓練
+       ========================================================================= */
+    const GEAR_POOL = {
+      weapon: [
+        { name: "新鮮綠蔥", rarity: "N", baseAtk: 6 },
+        { name: "雙持大蔥", rarity: "R", baseAtk: 14 },
+        { name: "蒼藍音律光劍", rarity: "SR", baseAtk: 32 },
+        { name: "39式電音戰戟", rarity: "SSR", baseAtk: 75 },
+        { name: "創世星辰權杖", rarity: "UR", baseAtk: 170 }
+      ],
+      outfit: [
+        { name: "經典歌姬服", rarity: "N", baseAtk: 4 },
+        { name: "活力運動套裝", rarity: "R", baseAtk: 10 },
+        { name: "賽博光織戰衣", rarity: "SR", baseAtk: 24 },
+        { name: "千本櫻和風戰袍", rarity: "SSR", baseAtk: 56 },
+        { name: "未來女神聖衣", rarity: "UR", baseAtk: 130 }
+      ],
+      acc: [
+        { name: "蒼藍耳麥", rarity: "N", baseAtk: 3 },
+        { name: "貓耳全息頭飾", rarity: "R", baseAtk: 8 },
+        { name: "音律增幅核心", rarity: "SR", baseAtk: 20 },
+        { name: "世界第一皇冠", rarity: "SSR", baseAtk: 48 },
+        { name: "永恆39星環", rarity: "UR", baseAtk: 110 }
+      ]
+    };
+    const RARITY_RANK = { N: 1, R: 2, SR: 3, SSR: 4, UR: 5 };
+
+    function getGachaCost() {
+      const totalLv = rpg.equip.weapon.enhance + rpg.equip.outfit.enhance + rpg.equip.acc.enhance;
+      return Math.floor(80 + totalLv * 25 + rpg.stage * 12);
+    }
+
+    function summonGear() {
+      const cost = getGachaCost();
+      if (rpg.gold < cost) return alert(`音律金幣不足喔！需要 ${cost} 金幣`);
+      rpg.gold -= cost;
+      grantRandomGear(false);
+      saveRpg();
+      updateAllUI();
+    }
+
+    function grantRandomGear(silentDrop) {
+      const slots = ['weapon', 'outfit', 'acc'];
+      const slot = slots[Math.floor(Math.random() * slots.length)];
+      const roll = Math.random() * 100;
+      let idx = 0;
+      if (roll > 96) idx = 4;      // 4% UR
+      else if (roll > 85) idx = 3; // 11% SSR
+      else if (roll > 62) idx = 2; // 23% SR
+      else if (roll > 30) idx = 1; // 32% R
+
+      const candidate = GEAR_POOL[slot][idx];
+      const current = rpg.equip[slot];
+
+      if (RARITY_RANK[candidate.rarity] > RARITY_RANK[current.rarity]) {
+        rpg.equip[slot] = { ...candidate, enhance: current.enhance };
+        if (!silentDrop) alert(`✨ 鍛造出高階裝備！【${candidate.rarity}】${candidate.name}（自動繼承原強化 +${current.enhance}）！`);
+        else spawnPopText(`🎁 掉落 ${candidate.rarity} ${candidate.name}!`, 'skill');
+      } else {
+        // 重複或較低階自動分解成金幣回饋
+        const refund = Math.floor(getGachaCost() * 0.45);
+        rpg.gold += refund;
+        if (!silentDrop) alert(`抽到【${candidate.rarity}】${candidate.name}，已自動分解為 ${refund} 音律金幣！`);
+      }
+      renderMikuVisuals();
+    }
+
+    function enhanceGear(slot) {
+      const item = rpg.equip[slot];
+      const cap = getMaxEnhanceCap();
+      if (item.enhance >= cap) {
+        return alert(`已達目前等級上限 (+${cap})！明天完成一次運動升級後，就能繼續往上強化囉！`);
+      }
+      const cost = Math.floor(40 * Math.pow(1.28, item.enhance));
+      if (rpg.gold < cost) return alert(`金幣不足！需要 ${cost} 金幣`);
+      rpg.gold -= cost;
+      item.enhance += 1;
+      saveRpg();
+      updateAllUI();
+    }
+
+    function upgradeTraining(key) {
+      const lv = rpg.training[key];
+      const cost = Math.floor(35 * Math.pow(1.25, lv));
+      if (rpg.gold < cost) return alert(`金幣不足！需要 ${cost} 金幣`);
+      rpg.gold -= cost;
+      rpg.training[key] += 1;
+      saveRpg();
+      updateAllUI();
+    }
+
+    /* =========================================================================
+       6. 運動完成連動升級 (每天最多 +1 等，06:00 換日線)
+       ========================================================================= */
+    function onWorkoutRewardTrigger(modeLabel) {
+      const todayKey = getFitnessDayKey();
+      // 每次運動必給 30 分鐘多巴胺狂熱 BUFF
+      rpg.dopamineEndTime = Date.now() + 30 * 60 * 1000;
+
+      if (rpg.lastLevelUpDayKey !== todayKey) {
+        rpg.lastLevelUpDayKey = todayKey;
+        rpg.level += 1;
+        const job = getCurrentJob();
+        const unlockedSkill = SKILLS.find(s => s.unlockLv === rpg.level);
+        const isJobUp = JOBS.some(j => j.minLv === rpg.level);
+
+        let msg = `完成「${modeLabel}」！<br>全屬性獨立倍率提升至 <strong style="color:var(--gold)">×${(1 + (rpg.level - 1) * 0.35).toFixed(2)}</strong><br>裝備強化上限解鎖至 <strong style="color:var(--miku)">+${rpg.level * 5}</strong><br>並獲得 30 分鐘【多巴胺狂熱】攻速/金幣加倍！`;
+        if (isJobUp) msg += `<br><br>👑 恭喜轉職為<strong>【${job.title}】</strong>！`;
+        if (unlockedSkill) msg += `<br>⚡ 解鎖新技能<strong>【${unlockedSkill.name}】</strong>！`;
+
+        document.getElementById('modalTitle').textContent = `LEVEL UP! Lv.${rpg.level}`;
+        document.getElementById('modalDesc').innerHTML = msg;
+        document.getElementById('levelUpModal').classList.add('show');
+      } else {
+        const bonusGold = 150 + rpg.stage * 40;
+        rpg.gold += bonusGold;
+        alert(`🎉 完成「${modeLabel}」，已點亮果果約會愛心 ❤️\n（今日運動升級額度已領取，明早 06:00 重置！額外獲得 ${bonusGold} 應援金幣＋30分鐘狂熱 BUFF！）`);
+      }
+
+      saveRpg();
+      renderMikuVisuals();
+      updateAllUI();
+    }
+
+    function closeLevelModal() {
+      document.getElementById('levelUpModal').classList.remove('show');
+    }
+
+    function simulateWorkoutComplete() {
+      adjustCount(1, "🧪 測試運動打卡");
+    }
+
+    /* =========================================================================
+       7. UI 渲染與分頁切換
+       ========================================================================= */
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active', 'pink-tab'));
+
+      if (tab === 'battle') {
+        document.getElementById('pageBattle').classList.add('active');
+        document.getElementById('navBattle').classList.add('active');
+      } else if (tab === 'growth') {
+        document.getElementById('pageGrowth').classList.add('active');
+        document.getElementById('navGrowth').classList.add('active');
+      } else {
+        document.getElementById('pageFitness').classList.add('active');
+        document.getElementById('navFitness').classList.add('active', 'pink-tab');
+      }
+      updateAllUI();
+    }
+
+    function updateSkillsUI() {
+      const grid = document.getElementById('skillsGrid');
+      grid.innerHTML = SKILLS.map((sk, idx) => {
+        const locked = rpg.level < sk.unlockLv;
+        const cdPct = locked ? 100 : (skillCooldowns[idx] / sk.cd) * 100;
+        return `
+          <div class="skill-btn ${locked ? 'locked' : ''}" onclick="castSkill(${idx})">
+            <div class="skill-cd-mask" style="height:${cdPct}%"></div>
+            <span class="skill-icon">${sk.icon}</span>
+            <span class="skill-name">${sk.name}</span>
+            <span class="skill-sub">${locked ? `Lv.${sk.unlockLv}解鎖` : (skillCooldowns[idx] > 0 ? skillCooldowns[idx].toFixed(0)+'s' : '就緒')}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateFeverUI() {
+      const arena = document.getElementById('arenaCard');
+      const fill = document.getElementById('feverFill');
+      const status = document.getElementById('feverStatusText');
+      const pct = document.getElementById('feverPctText');
+
+      if (feverTimer > 0) {
+        arena.classList.add('fever-bg');
+        fill.style.width = (feverTimer / 10) * 100 + '%';
+        status.textContent = `🔥 MIKU FEVER 狂熱中！攻速大爆發 (${feverTimer.toFixed(1)}s)`;
+        pct.textContent = 'MAX';
+      } else {
+        arena.classList.remove('fever-bg');
+        fill.style.width = feverCharge + '%';
+        status.textContent = '✨ 點擊舞台揮舞螢光棒應援！';
+        pct.textContent = feverCharge + '%';
+      }
+    }
+
+    function updateAllUI() {
+      const st = calcStats();
+      // HUD
+      document.getElementById('hudJobTitle').textContent = `Lv.${rpg.level} ${st.job.title}`;
+      document.getElementById('hudPower').textContent = `戰力 ${formatNum(st.totalAtk)}`;
+      document.getElementById('hudGold').textContent = formatNum(rpg.gold);
+      document.getElementById('hudHearts').textContent = `${count} / ${config.targetCount} ❤️`;
+
+      // 戰場標頭
+      document.getElementById('stageLabel').textContent = `第 ${rpg.stage} 關` + (st.isDopamine ? ' 🔥狂熱中' : '');
+      const bossArea = document.getElementById('bossControlArea');
+      if (rpg.fightingBoss) {
+        bossArea.innerHTML = `<span class="badge pink">⏳ 限時 ${Math.ceil(rpg.bossTimer)}s</span>`;
+      } else if (rpg.stage % 5 === 0) {
+        bossArea.innerHTML = `<button class="boss-btn" onclick="startBossFight()">⚔️ 挑戰關主 BOSS</button>`;
+      } else {
+        bossArea.innerHTML = `<span class="badge">DPS ${formatNum(st.estDps)}/秒</span>`;
+      }
+
+      document.getElementById('multBadge').textContent = `運動倍率 ×${st.levelMult.toFixed(2)}`;
+
+      // 今日是否已運動升級提示
+      const todayKey = getFitnessDayKey();
+      const ruleEl = document.getElementById('levelRuleStatus');
+      if (rpg.lastLevelUpDayKey === todayKey) {
+        ruleEl.innerHTML = `✅ 今日已完成運動升級（Lv.${rpg.level}）！明早 06:00 開放下一等`;
+      } else {
+        ruleEl.innerHTML = `🌱 今日尚未運動：完成一次運動立即升至 <strong>Lv.${rpg.level + 1}</strong>！`;
+      }
+      const nextJob = JOBS.find(j => j.minLv > rpg.level);
+      document.getElementById('nextUnlockHint').textContent = nextJob
+        ? `下一轉職：Lv.${nextJob.minLv}【${nextJob.title}】（全屬性 ×${nextJob.mult}）`
+        : `已達成最高神級轉職【未來創世女神】！`;
+
+      // 分頁 2：裝備欄
+      const cap = getMaxEnhanceCap();
+      document.getElementById('maxEnhanceCap').textContent = cap;
+      document.getElementById('gachaCost').textContent = formatNum(getGachaCost());
+
+      const slotNames = { weapon: '武器', outfit: '服裝', acc: '飾品' };
+      document.getElementById('equipGrid').innerHTML = ['weapon', 'outfit', 'acc'].map(s => {
+        const it = rpg.equip[s];
+        const atk = Math.floor(it.baseAtk * (1 + it.enhance * 0.25));
+        const enhCost = Math.floor(40 * Math.pow(1.28, it.enhance));
+        return `
+          <div class="equip-slot rarity-${it.rarity}">
+            <span style="font-size:0.68rem; color:var(--muted);">${slotNames[s]} [${it.rarity}]</span>
+            <strong style="font-size:0.82rem;">${it.name}</strong>
+            <span style="font-size:0.75rem;">+${it.enhance} (攻+${atk})</span>
+            <button class="btn-small btn-secondary" style="width:100%; margin-top:4px;" onclick="enhanceGear('${s}')">
+              ${it.enhance >= cap ? '需升級解鎖' : `強化 (${formatNum(enhCost)})`}
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      // 分頁 2：金幣訓練
+      const trainDefs = [
+        { key: 'atk',  name: '基礎音律攻擊', desc: `目前 +${rpg.training.atk * 6} 基礎攻擊` },
+        { key: 'crit', name: '精準節拍暴擊', desc: `目前暴擊率 ${st.critRate.toFixed(1)}%` },
+        { key: 'cdmg', name: '共鳴暴擊傷害', desc: `目前暴傷 ${(st.critDmg * 100).toFixed(0)}%` },
+        { key: 'gold', name: '應援金幣加成', desc: `目前金幣倍率 ×${st.goldMult.toFixed(2)}` }
+      ];
+      document.getElementById('trainingList').innerHTML = trainDefs.map(t => {
+        const lv = rpg.training[t.key];
+        const cost = Math.floor(35 * Math.pow(1.25, lv));
+        return `
+          <div class="train-row">
+            <div>
+              <div style="font-size:0.86rem; font-weight:700;">${t.name} <span style="color:var(--miku);">Lv.${lv}</span></div>
+              <div style="font-size:0.74rem; color:var(--muted);">${t.desc}</div>
+            </div>
+            <button class="btn-small btn-miku" onclick="upgradeTraining('${t.key}')">升級 (${formatNum(cost)})</button>
+          </div>
+        `;
+      }).join('');
+
+      // 分頁 2：轉職樹
+      document.getElementById('jobTreeList').innerHTML = JOBS.map(j => {
+        const isUnlocked = rpg.level >= j.minLv;
+        const isCurrent = st.job.minLv === j.minLv;
+        return `
+          <div class="job-card ${isCurrent ? 'current' : (isUnlocked ? 'unlocked' : '')}">
+            <div>
+              <div style="font-size:0.86rem; font-weight:800;">
+                Lv.${j.minLv} 【${j.title}】 ${isCurrent ? '⭐目前' : ''}
+              </div>
+              <div style="font-size:0.74rem; color:var(--muted); margin-top:2px;">${j.desc}</div>
+            </div>
+            <span class="badge ${isUnlocked ? '' : 'pink'}">${isUnlocked ? '已解鎖' : '未達成'}</span>
+          </div>
+        `;
+      }).join('');
+
+      updateSkillsUI();
+      updateFeverUI();
+    }
+
+    /* =========================================================================
+       8. 遊戲主時脈 (自動戰鬥、冷卻與離線收益)
+       ========================================================================= */
+    let attackAcc = 0;
+    let saveAcc = 0;
+
+    setInterval(() => {
+      const dt = 0.1; // 100ms tick
+      const st = calcStats();
+
+      // 技能冷卻與自動施放
+      for (let i = 0; i < SKILLS.length; i++) {
+        if (skillCooldowns[i] > 0) {
+          skillCooldowns[i] = Math.max(0, skillCooldowns[i] - dt);
+        } else if (rpg.level >= SKILLS[i].unlockLv) {
+          castSkill(i);
+        }
+      }
+
+      if (buff39Timer > 0) buff39Timer = Math.max(0, buff39Timer - dt);
+      if (feverTimer > 0) {
+        feverTimer = Math.max(0, feverTimer - dt);
+        updateFeverUI();
+      }
+
+      // Boss 倒數計時
+      if (rpg.fightingBoss) {
+        rpg.bossTimer -= dt;
+        if (rpg.bossTimer <= 0) {
+          rpg.fightingBoss = false;
+          spawnMonster();
+          spawnPopText("⏰ 挑戰超時，退回小怪農裝！", "cheer");
+        }
+        updateAllUI();
+      }
+
+      // 普攻累積
+      attackAcc += dt * st.aps;
+      if (attackAcc >= 1) {
+        attackAcc -= 1;
+        performAttack(1.0);
+      }
+
+      saveAcc += dt;
+      if (saveAcc >= 5) {
+        saveAcc = 0;
+        saveRpg();
+        updateSkillsUI();
+      }
+    }, 100);
+
+    // 離線掛機收益計算
+    function processOfflineProgress() {
+      const elapsedSec = Math.min(12 * 3600, Math.floor((Date.now() - rpg.lastSaveTime) / 1000));
+      if (elapsedSec > 60) {
+        const st = calcStats();
+        const avgHp = Math.floor(42 * Math.pow(1.24, rpg.stage - 1));
+        const kills = Math.floor((st.estDps * elapsedSec * 0.6) / avgHp);
+        if (kills > 0) {
+          const earned = Math.floor(kills * (8 + rpg.stage * 4.5) * st.goldMult);
+          rpg.gold += earned;
+          setTimeout(() => {
+            spawnPopText(`🌙 離線 ${Math.floor(elapsedSec / 60)} 分鐘：+${formatNum(earned)}金`, 'skill');
+            updateAllUI();
+          }, 500);
+        }
+      }
+    }
+
+    /* =========================================================================
+       9. 原本的果果約會集點 & 黃金四寶計時器 (100% 完整保留)
+       ========================================================================= */
     function getRank(total) {
       if (total >= 60) return "Lv.5 果果專屬挺拔猛男 👑";
       if (total >= 30) return "Lv.4 上胸有肉進化體 💪";
@@ -245,7 +1377,6 @@
       return "Lv.1 剛離開電腦椅的勇者 🌱";
     }
 
-    // 渲染愛心與紀錄
     function renderHearts() {
       const grid = document.getElementById('heartsGrid');
       grid.innerHTML = '';
@@ -260,6 +1391,7 @@
       document.getElementById('rankTitle').textContent = `稱號：${getRank(lifetime)}`;
       document.getElementById('totalLifetime').textContent = `生涯累計：${lifetime} 次`;
       document.getElementById('unlockBanner').classList.toggle('show', count >= config.targetCount);
+      updateAllUI();
     }
 
     function renderLogs() {
@@ -293,18 +1425,22 @@
         const dateStr = `${now.getMonth()+1}/${now.getDate()} (週${days[now.getDay()]}) ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
         logs.unshift({ date: dateStr, mode: modeLabel });
         if (logs.length > 50) logs.pop();
+        saveState();
+        // 連動觸發初音升級判定！
+        onWorkoutRewardTrigger(modeLabel);
+      } else {
+        saveState();
       }
-      saveState();
     }
 
     function resetMonth() {
-      if (confirm('確定要清空本月愛心，開啟新的一輪約會集點嗎？（生涯累計與紀錄會保留）')) {
+      if (confirm('確定要清空本月愛心，開啟新的一輪約會集點嗎？（生涯累計與初音等級會保留）')) {
         count = 0;
         saveState();
       }
     }
 
-    // --- 音效與 8-bit 休息音樂合成器 ---
+    // 音效與 8-bit 休息音樂合成器
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let bgmInterval = null;
 
@@ -322,13 +1458,11 @@
       osc.stop(audioCtx.currentTime + duration);
     }
 
-    // 快樂過關音效
     function playStageClearSound() {
-      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5 E5 G5 C6
+      const notes = [523.25, 659.25, 783.99, 1046.50];
       notes.forEach((n, idx) => setTimeout(() => playTone(n, 0.25, 'triangle', 0.3), idx * 90));
     }
 
-    // 全部完成 RPG 勝利號角
     function playVictoryFanfare() {
       const melody = [
         { f: 523.25, d: 0.15, t: 0 },
@@ -342,7 +1476,6 @@
       melody.forEach(m => setTimeout(() => playTone(m.f, m.d, 'triangle', 0.35), m.t));
     }
 
-    // 休息 20 秒內建 8-bit 輕快旋律
     function startRestBgm() {
       stopRestBgm();
       if (!config.autoBgm) return;
@@ -361,7 +1494,6 @@
       document.getElementById('ytContainer').classList.remove('show');
     }
 
-    // 切換嵌入隨機 YouTube 副歌
     function openRandomYT() {
       stopRestBgm();
       if (!config.ytLinks || config.ytLinks.length === 0) return alert('請先在設定裡貼上 YouTube 網址喔！');
@@ -377,7 +1509,7 @@
       box.classList.add('show');
     }
 
-    // --- 計時器核心 ---
+    // 計時器核心
     let stepIndex = 0;
     let isWork = true;
     let timeLeft = config.workSec;
@@ -411,7 +1543,7 @@
       phaseEl.textContent = isWork ? `🔥 動作進行中 (${config.workSec}秒)` : `😮‍💨 休息喘口氣 (${config.restSec}秒)`;
       phaseEl.className = 'phase-label' + (isWork ? '' : ' rest');
       nameEl.textContent = isWork ? plan[stepIndex] : `下一招：${plan[stepIndex + 1] || '完成！'}`;
-      
+
       const mins = String(Math.floor(timeLeft / 60)).padStart(2, '0');
       const secs = String(timeLeft % 60).padStart(2, '0');
       timeEl.textContent = `${mins}:${secs}`;
@@ -426,10 +1558,7 @@
       playVictoryFanfare();
       const label = isLazyMode ? "🦥 4分鐘保底" : "🔥 10分鐘完整";
       adjustCount(1, label);
-      setTimeout(() => {
-        alert(`🎉 太神啦！完成「${label}」，已自動點亮 1 顆愛心 ❤️`);
-        resetTimer();
-      }, 300);
+      resetTimer();
     }
 
     function advancePhase() {
@@ -467,7 +1596,6 @@
         btn.textContent = '暫停';
         timerId = setInterval(() => {
           timeLeft--;
-          // 最後 5 秒倒數提示音（音高逐漸升高）
           if (timeLeft <= 5 && timeLeft > 0) {
             playTone(450 + (5 - timeLeft) * 80, 0.12, 'sine', 0.3);
           }
@@ -497,7 +1625,7 @@
       updateTimerUI();
     }
 
-    // --- 設定面板讀寫 ---
+    // 設定面板讀寫
     function toggleSettings() {
       const panel = document.getElementById('settingsPanel');
       panel.classList.toggle('open');
@@ -531,10 +1659,14 @@
       alert('✅ 設定已儲存並套用！');
     }
 
-    // 初始化
+    // 啟動初始化
+    renderMikuVisuals();
+    spawnMonster();
     renderHearts();
     renderLogs();
     updateTimerUI();
+    processOfflineProgress();
+    updateAllUI();
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js');
