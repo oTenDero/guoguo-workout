@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#1e1e2e" />
+  <title>果果約會集點 × 10分鐘運動</title>
+  <style>
+    :root {
+      --bg: #16161e;
+      --card: #22222e;
+      --accent: #ff7597;
+      --work: #4ade80;
+      --rest: #60a5fa;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body {
+      margin: 0; background: var(--bg); color: var(--text);
+      display: flex; flex-direction: column; align-items: center;
+      min-height: 100vh; padding: 20px 16px 40px;
+    }
+    .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 18px; }
+    .card {
+      background: var(--card); border-radius: 20px; padding: 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    h1 { font-size: 1.2rem; margin: 0 0 12px; display: flex; justify-content: space-between; align-items: center; }
+    .badge { font-size: 0.85rem; background: rgba(255,117,151,0.18); color: var(--accent); padding: 4px 10px; border-radius: 99px; }
+    
+    /* 15顆愛心集點區 */
+    .hearts-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 14px 0;
+    }
+    .heart-slot {
+      aspect-ratio: 1; border-radius: 14px; background: rgba(255,255,255,0.05);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; cursor: pointer; transition: transform 0.15s;
+      user-select: none;
+    }
+    .heart-slot.active { background: rgba(255,117,151,0.2); transform: scale(1.05); }
+    .unlock-banner {
+      display: none; text-align: center; background: linear-gradient(135deg, #ff7597, #ff9a8b);
+      color: #16161e; font-weight: bold; padding: 12px; border-radius: 12px; margin-top: 10px;
+    }
+    .unlock-banner.show { display: block; animation: pop 0.4s ease; }
+    @keyframes pop { 0% { transform: scale(0.9); } 70% { transform: scale(1.03); } 100% { transform: scale(1); } }
+
+    /* 計時器區 */
+    .timer-box { text-align: center; }
+    .phase-label { font-size: 1rem; font-weight: 600; color: var(--work); letter-spacing: 1px; }
+    .phase-label.rest { color: var(--rest); }
+    .exercise-name { font-size: 1.8rem; font-weight: 800; margin: 8px 0; }
+    .time-display { font-size: 4.5rem; font-weight: 800; font-variant-numeric: tabular-nums; margin: 10px 0; }
+    .round-info { color: var(--muted); font-size: 0.9rem; margin-bottom: 18px; }
+    .btn-row { display: flex; gap: 10px; }
+    button {
+      flex: 1; border: none; border-radius: 14px; padding: 14px;
+      font-size: 1rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s;
+    }
+    button:active { opacity: 0.8; }
+    .btn-primary { background: var(--accent); color: #16161e; }
+    .btn-secondary { background: rgba(255,255,255,0.1); color: var(--text); }
+    .btn-small { padding: 8px 12px; font-size: 0.8rem; flex: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 果果約會集點卡 -->
+    <div class="card">
+      <h1>
+        <span>❤️ 果果約會解鎖進度</span>
+        <span class="badge" id="countBadge">0 / 15 次</span>
+      </h1>
+      <div style="font-size: 0.85rem; color: var(--muted);">目標：六、日、二、三｜集滿 15 次提出約會！</div>
+      <div class="hearts-grid" id="heartsGrid"></div>
+      <div class="unlock-banner" id="unlockBanner">🎉 集滿 15 次啦！快去約果果出門吧！</div>
+      <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px;">
+        <button class="btn-secondary btn-small" onclick="adjustCount(-1)">-1 次</button>
+        <button class="btn-secondary btn-small" onclick="adjustCount(1)">手動 +1</button>
+        <button class="btn-secondary btn-small" onclick="resetMonth()">新月份重置</button>
+      </div>
+    </div>
+
+    <!-- 10分鐘四寶計時器 -->
+    <div class="card timer-box">
+      <div class="phase-label" id="phaseLabel">準備開始</div>
+      <div class="exercise-name" id="exerciseName">徒手深蹲</div>
+      <div class="time-display" id="timeDisplay">00:40</div>
+      <div class="round-info" id="roundInfo">進度：第 1 / 10 關（共 10 分鐘）</div>
+      <div class="btn-row">
+        <button class="btn-primary" id="startBtn" onclick="toggleTimer()">開始運動</button>
+        <button class="btn-secondary" onclick="resetTimer()">重置</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 10分鐘黃金四寶排程（10關 × 60秒 = 10分鐘）
+    const WORKOUT_PLAN = [
+      "1. 徒手深蹲（大腿/代謝）",
+      "2. 伏地挺身（上胸有肉）",
+      "3. 鳥狗式（腰背支撐）",
+      "4. 死蟲式（收緊小腹）",
+      "5. 徒手深蹲（第2輪）",
+      "6. 伏地挺身（第2輪）",
+      "7. 鳥狗式（第2輪）",
+      "8. 死蟲式（第2輪）",
+      "9. 死蟲式（小腹加強收尾）",
+      "10. 伏地挺身（上胸加強收尾）"
+    ];
+
+    // 集點邏輯
+    let count = parseInt(localStorage.getItem('guoguo_workout_count') || '0', 10);
+    function renderHearts() {
+      const grid = document.getElementById('heartsGrid');
+      grid.innerHTML = '';
+      for (let i = 1; i <= 15; i++) {
+        const div = document.createElement('div');
+        div.className = 'heart-slot' + (i <= count ? ' active' : '');
+        div.textContent = i <= count ? '❤️' : '🤍';
+        div.onclick = () => { count = i; saveCount(); };
+        grid.appendChild(div);
+      }
+      document.getElementById('countBadge').textContent = `${count} / 15 次`;
+      document.getElementById('unlockBanner').classList.toggle('show', count >= 15);
+    }
+    function saveCount() {
+      localStorage.setItem('guoguo_workout_count', count);
+      renderHearts();
+    }
+    function adjustCount(delta) {
+      count = Math.max(0, Math.min(15, count + delta));
+      saveCount();
+    }
+    function resetMonth() {
+      if (confirm('確定要清空愛心，開啟新的一個月集點嗎？')) {
+        count = 0;
+        saveCount();
+      }
+    }
+
+    // 音效產生器（免外部音檔）
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function beep(freq = 600, duration = 0.15) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.frequency.value = freq;
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+      osc.stop(audioCtx.currentTime + duration);
+    }
+
+    // 計時器邏輯（40秒運動 / 20秒休息）
+    let stepIndex = 0;
+    let isWork = true;
+    let timeLeft = 40;
+    let timerId = null;
+    let wakeLock = null;
+
+    async function requestWakeLock() {
+      try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
+    }
+
+    function updateTimerUI() {
+      const phaseEl = document.getElementById('phaseLabel');
+      const nameEl = document.getElementById('exerciseName');
+      const timeEl = document.getElementById('timeDisplay');
+      const roundEl = document.getElementById('roundInfo');
+
+      phaseEl.textContent = isWork ? '🔥 動作進行中 (40秒)' : '😮‍💨 休息準備下一招 (20秒)';
+      phaseEl.className = 'phase-label' + (isWork ? '' : ' rest');
+      nameEl.textContent = isWork ? WORKOUT_PLAN[stepIndex] : `下一招：${WORKOUT_PLAN[stepIndex + 1] || '完成！'}`;
+      timeEl.textContent = `00:${String(timeLeft).padStart(2, '0')}`;
+      roundEl.textContent = `進度：第 ${stepIndex + 1} / ${WORKOUT_PLAN.length} 關`;
+    }
+
+    function toggleTimer() {
+      const btn = document.getElementById('startBtn');
+      if (timerId) {
+        clearInterval(timerId);
+        timerId = null;
+        btn.textContent = '繼續運動';
+      } else {
+        beep(800, 0.2);
+        requestWakeLock();
+        btn.textContent = '暫停';
+        timerId = setInterval(() => {
+          timeLeft--;
+          if (timeLeft <= 3 && timeLeft > 0) beep(500, 0.1);
+          if (timeLeft <= 0) {
+            if (isWork) {
+              if (stepIndex === WORKOUT_PLAN.length - 1) {
+                // 全部完成！自動 +1 顆愛心
+                clearInterval(timerId);
+                timerId = null;
+                beep(1000, 0.5);
+                adjustCount(1);
+                alert('🎉 恭喜完成今天 10 分鐘！已自動幫你集滿 1 顆愛心 ❤️');
+                resetTimer();
+                return;
+              }
+              isWork = false;
+              timeLeft = 20;
+              beep(400, 0.3);
+            } else {
+              isWork = true;
+              stepIndex++;
+              timeLeft = 40;
+              beep(880, 0.3);
+            }
+          }
+          updateTimerUI();
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(timerId);
+      timerId = null;
+      stepIndex = 0;
+      isWork = true;
+      timeLeft = 40;
+      document.getElementById('startBtn').textContent = '開始運動';
+      updateTimerUI();
+    }
+
+    renderHearts();
+    updateTimerUI();
+  </script>
+</body>
+</html>
