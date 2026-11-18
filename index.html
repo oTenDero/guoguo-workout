@@ -1984,4 +1984,186 @@
     function stopRestBgm() {
       if (bgmInterval) { clearInterval(bgmInterval); bgmInterval = null; }
       document.getElementById('ytContainer').innerHTML = '';
-      document.getElementById('ytContainer
+      document.getElementById('ytContainer').classList.remove('show');
+    }
+
+    function openRandomYT() {
+      stopRestBgm();
+      if (!config.ytLinks || config.ytLinks.length === 0) return alert('請先在設定裡貼上 YouTube 網址喔！');
+      const rawUrl = config.ytLinks[Math.floor(Math.random() * config.ytLinks.length)];
+      const match = rawUrl.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+      const timeMatch = rawUrl.match(/[?&]t=(\d+)/);
+      const videoId = match ? match[1] : null;
+      const startSec = timeMatch ? timeMatch[1] : 50;
+      if (!videoId) return alert('YouTube 網址格式不正確');
+
+      const box = document.getElementById('ytContainer');
+      box.innerHTML = `<iframe width="100%" height="150" src="https://www.youtube.com/embed/${videoId}?start=${startSec}&autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+      box.classList.add('show');
+    }
+
+    let stepIndex = 0;
+    let isWork = true;
+    let timeLeft = config.workSec;
+    let timerId = null;
+    let wakeLock = null;
+
+    function getActivePlan() {
+      return isLazyMode ? config.exercises.slice(0, 4) : config.exercises;
+    }
+
+    function setMode(mode) {
+      if (timerId) return alert('請先暫停或重置計時器再切換模式喔！');
+      isLazyMode = (mode === 'lazy');
+      document.getElementById('modeFull').classList.toggle('active', !isLazyMode);
+      document.getElementById('modeLazy').classList.toggle('active', isLazyMode);
+      resetTimer();
+    }
+
+    async function requestWakeLock() {
+      try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
+    }
+
+    function updateTimerUI() {
+      const plan = getActivePlan();
+      const phaseEl = document.getElementById('phaseLabel');
+      const nameEl = document.getElementById('exerciseName');
+      const timeEl = document.getElementById('timeDisplay');
+      const roundEl = document.getElementById('roundInfo');
+      const musicBox = document.getElementById('musicBox');
+
+      phaseEl.textContent = isWork ? `🔥 動作進行中 (${config.workSec}秒)` : `😮‍💨 休息喘口氣 (${config.restSec}秒)`;
+      phaseEl.className = 'phase-label' + (isWork ? '' : ' rest');
+      nameEl.textContent = isWork ? plan[stepIndex] : `下一招：${plan[stepIndex + 1] || '完成！'}`;
+
+      const mins = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+      const secs = String(timeLeft % 60).padStart(2, '0');
+      timeEl.textContent = `${mins}:${secs}`;
+      roundEl.textContent = `進度：第 ${stepIndex + 1} / ${plan.length} 關`;
+      musicBox.classList.toggle('show', !isWork && timerId !== null);
+    }
+
+    function finishWorkout() {
+      clearInterval(timerId);
+      timerId = null;
+      stopRestBgm();
+      playVictoryFanfare();
+      const label = isLazyMode ? "🦥 4分鐘保底" : "🔥 10分鐘完整";
+      adjustCount(1, label);
+      resetTimer();
+    }
+
+    function advancePhase() {
+      const plan = getActivePlan();
+      if (isWork) {
+        if (stepIndex >= plan.length - 1) {
+          finishWorkout();
+          return;
+        }
+        playStageClearSound();
+        isWork = false;
+        timeLeft = config.restSec;
+        startRestBgm();
+      } else {
+        stopRestBgm();
+        playTone(880, 0.25, 'sine', 0.35);
+        isWork = true;
+        stepIndex++;
+        timeLeft = config.workSec;
+      }
+      updateTimerUI();
+    }
+
+    function toggleTimer() {
+      const btn = document.getElementById('startBtn');
+      if (timerId) {
+        clearInterval(timerId);
+        timerId = null;
+        stopRestBgm();
+        btn.textContent = '繼續運動';
+      } else {
+        playTone(800, 0.15);
+        requestWakeLock();
+        if (!isWork) startRestBgm();
+        btn.textContent = '暫停';
+        timerId = setInterval(() => {
+          timeLeft--;
+          if (timeLeft <= 5 && timeLeft > 0) {
+            playTone(450 + (5 - timeLeft) * 80, 0.12, 'sine', 0.3);
+          }
+          if (timeLeft <= 0) {
+            advancePhase();
+          } else {
+            updateTimerUI();
+          }
+        }, 1000);
+      }
+      updateTimerUI();
+    }
+
+    function skipStep() {
+      if (!timerId && stepIndex === 0 && isWork) return;
+      advancePhase();
+    }
+
+    function resetTimer() {
+      clearInterval(timerId);
+      timerId = null;
+      stopRestBgm();
+      stepIndex = 0;
+      isWork = true;
+      timeLeft = config.workSec;
+      document.getElementById('startBtn').textContent = '開始運動';
+      updateTimerUI();
+    }
+
+    function toggleSettings() {
+      const panel = document.getElementById('settingsPanel');
+      panel.classList.toggle('open');
+      if (panel.classList.contains('open')) {
+        document.getElementById('cfgWorkSec').value = config.workSec;
+        document.getElementById('cfgRestSec').value = config.restSec;
+        document.getElementById('cfgTarget').value = config.targetCount;
+        document.getElementById('cfgExercises').value = config.exercises.join('\n');
+        document.getElementById('cfgYtLinks').value = config.ytLinks.join('\n');
+        document.getElementById('cfgAutoBgm').checked = config.autoBgm;
+      }
+    }
+
+    function saveSettings() {
+      const exLines = document.getElementById('cfgExercises').value.split('\n').map(s => s.trim()).filter(Boolean);
+      const ytLines = document.getElementById('cfgYtLinks').value.split('\n').map(s => s.trim()).filter(Boolean);
+      if (exLines.length === 0) return alert('動作清單至少要有一行喔！');
+
+      config = {
+        workSec: Math.max(5, parseInt(document.getElementById('cfgWorkSec').value, 10) || 40),
+        restSec: Math.max(5, parseInt(document.getElementById('cfgRestSec').value, 10) || 20),
+        targetCount: Math.max(1, parseInt(document.getElementById('cfgTarget').value, 10) || 15),
+        autoBgm: document.getElementById('cfgAutoBgm').checked,
+        exercises: exLines,
+        ytLinks: ytLines
+      };
+      localStorage.setItem('guoguo_cfg', JSON.stringify(config));
+      renderHearts();
+      resetTimer();
+      toggleSettings();
+      alert('✅ 設定已儲存並套用！');
+    }
+
+    // 初始化啟動
+    loadCustomAvatar();
+    renderMikuVisuals();
+    refreshStamina();
+    spawnMonster();
+    renderHearts();
+    renderLogs();
+    updateTimerUI();
+    processOfflineProgress();
+    updateAllUI();
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+  </script>
+</body>
+</html>
