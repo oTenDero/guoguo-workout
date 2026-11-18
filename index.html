@@ -4,16 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="theme-color" content="#1e1e2e" />
+  <meta name="theme-color" content="#16161e" />
   <title>果果約會集點 × 10分鐘運動</title>
   <link rel="manifest" href="/manifest.json" />
   <style>
     :root {
       --bg: #16161e;
       --card: #22222e;
+      --card-sub: #2a2a38;
       --accent: #ff7597;
       --work: #4ade80;
       --rest: #60a5fa;
+      --gold: #fbbf24;
       --text: #f1f5f9;
       --muted: #94a3b8;
     }
@@ -21,41 +23,65 @@
     body {
       margin: 0; background: var(--bg); color: var(--text);
       display: flex; flex-direction: column; align-items: center;
-      min-height: 100vh; padding: 20px 16px 40px;
+      min-height: 100vh; padding: 16px 14px 50px;
     }
-    .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 18px; }
+    .container { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 16px; }
     .card {
-      background: var(--card); border-radius: 20px; padding: 20px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      background: var(--card); border-radius: 22px; padding: 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
     }
-    h1 { font-size: 1.2rem; margin: 0 0 12px; display: flex; justify-content: space-between; align-items: center; }
-    .badge { font-size: 0.85rem; background: rgba(255,117,151,0.18); color: var(--accent); padding: 4px 10px; border-radius: 99px; }
-    
-    /* 15顆愛心集點區 */
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    h1 { font-size: 1.15rem; margin: 0; display: flex; align-items: center; gap: 6px; }
+    .badge { font-size: 0.85rem; background: rgba(255,117,151,0.18); color: var(--accent); padding: 4px 10px; border-radius: 99px; font-weight: 700; }
+    .level-bar {
+      background: var(--card-sub); border-radius: 12px; padding: 8px 12px;
+      font-size: 0.82rem; display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px; color: var(--gold);
+    }
+
+    /* 愛心集點區 */
     .hearts-grid {
-      display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 14px 0;
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 12px 0;
     }
     .heart-slot {
       aspect-ratio: 1; border-radius: 14px; background: rgba(255,255,255,0.05);
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.5rem; cursor: pointer; transition: transform 0.15s;
+      font-size: 1.45rem; cursor: pointer; transition: transform 0.15s;
       user-select: none;
     }
-    .heart-slot.active { background: rgba(255,117,151,0.2); transform: scale(1.05); }
+    .heart-slot.active { background: rgba(255,117,151,0.22); transform: scale(1.04); }
     .unlock-banner {
       display: none; text-align: center; background: linear-gradient(135deg, #ff7597, #ff9a8b);
-      color: #16161e; font-weight: bold; padding: 12px; border-radius: 12px; margin-top: 10px;
+      color: #16161e; font-weight: 800; padding: 12px; border-radius: 14px; margin-top: 10px;
     }
     .unlock-banner.show { display: block; animation: pop 0.4s ease; }
     @keyframes pop { 0% { transform: scale(0.9); } 70% { transform: scale(1.03); } 100% { transform: scale(1); } }
 
     /* 計時器區 */
-    .timer-box { text-align: center; }
-    .phase-label { font-size: 1rem; font-weight: 600; color: var(--work); letter-spacing: 1px; }
+    .timer-box { text-align: center; position: relative; }
+    .mode-switch {
+      display: inline-flex; background: var(--card-sub); border-radius: 99px; padding: 3px; margin-bottom: 12px;
+    }
+    .mode-btn {
+      padding: 5px 12px; border-radius: 99px; font-size: 0.78rem; font-weight: 700;
+      background: transparent; color: var(--muted); border: none; cursor: pointer;
+    }
+    .mode-btn.active { background: var(--accent); color: #16161e; }
+    .phase-label { font-size: 0.95rem; font-weight: 700; color: var(--work); letter-spacing: 1px; }
     .phase-label.rest { color: var(--rest); }
-    .exercise-name { font-size: 1.8rem; font-weight: 800; margin: 8px 0; }
-    .time-display { font-size: 4.5rem; font-weight: 800; font-variant-numeric: tabular-nums; margin: 10px 0; }
-    .round-info { color: var(--muted); font-size: 0.9rem; margin-bottom: 18px; }
+    .exercise-name { font-size: 1.65rem; font-weight: 800; margin: 6px 0; min-height: 2.2rem; }
+    .time-display { font-size: 4.5rem; font-weight: 800; font-variant-numeric: tabular-nums; margin: 6px 0; line-height: 1; }
+    .round-info { color: var(--muted); font-size: 0.85rem; margin: 10px 0 16px; }
+    
+    /* 休息音樂盒 */
+    .music-box {
+      display: none; background: rgba(96, 165, 250, 0.12); border: 1px solid rgba(96, 165, 250, 0.3);
+      border-radius: 14px; padding: 10px; margin-bottom: 14px; font-size: 0.85rem;
+    }
+    .music-box.show { display: block; }
+    .yt-container { margin-top: 8px; border-radius: 10px; overflow: hidden; display: none; }
+    .yt-container.show { display: block; }
+
     .btn-row { display: flex; gap: 10px; }
     button {
       flex: 1; border: none; border-radius: 14px; padding: 14px;
@@ -64,121 +90,367 @@
     button:active { opacity: 0.8; }
     .btn-primary { background: var(--accent); color: #16161e; }
     .btn-secondary { background: rgba(255,255,255,0.1); color: var(--text); }
-    .btn-small { padding: 8px 12px; font-size: 0.8rem; flex: none; }
+    .btn-small { padding: 7px 10px; font-size: 0.78rem; flex: none; border-radius: 10px; }
+
+    /* 歷史紀錄與自訂設定區 */
+    .log-list {
+      max-height: 130px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
+      font-size: 0.82rem; color: var(--muted); margin-top: 8px;
+    }
+    .log-item {
+      background: var(--card-sub); padding: 7px 12px; border-radius: 10px;
+      display: flex; justify-content: space-between;
+    }
+    .settings-panel { display: none; flex-direction: column; gap: 12px; margin-top: 12px; }
+    .settings-panel.open { display: flex; }
+    .field-group { display: flex; flex-direction: column; gap: 5px; font-size: 0.85rem; color: var(--muted); }
+    input, textarea {
+      background: var(--card-sub); border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text); border-radius: 10px; padding: 9px 12px; font-size: 0.9rem; width: 100%;
+    }
+    textarea { min-height: 110px; resize: vertical; line-height: 1.4; }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- 果果約會集點卡 -->
+    <!-- 1. 果果約會集點卡 -->
     <div class="card">
-      <h1>
-        <span>❤️ 果果約會解鎖進度</span>
+      <div class="header-row">
+        <h1>❤️ 果果約會解鎖進度</h1>
         <span class="badge" id="countBadge">0 / 15 次</span>
-      </h1>
-      <div style="font-size: 0.85rem; color: var(--muted);">目標：六、日、二、三｜集滿 15 次提出約會！</div>
+      </div>
+      <div class="level-bar">
+        <span id="rankTitle">稱號：Lv.1 沙發預備軍</span>
+        <span id="totalLifetime">生涯累計：0 次</span>
+      </div>
       <div class="hearts-grid" id="heartsGrid"></div>
-      <div class="unlock-banner" id="unlockBanner">🎉 集滿 15 次啦！快去約果果出門吧！</div>
-      <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px;">
-        <button class="btn-secondary btn-small" onclick="adjustCount(-1)">-1 次</button>
-        <button class="btn-secondary btn-small" onclick="adjustCount(1)">手動 +1</button>
-        <button class="btn-secondary btn-small" onclick="resetMonth()">新月份重置</button>
+      <div class="unlock-banner" id="unlockBanner">🎉 集滿目標啦！快去跟果果提出約會吧！</div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+        <span style="font-size: 0.78rem; color: var(--muted);">排程：六、日、二、三</span>
+        <div style="display: flex; gap: 6px;">
+          <button class="btn-secondary btn-small" onclick="adjustCount(-1)">-1</button>
+          <button class="btn-secondary btn-small" onclick="adjustCount(1)">+1</button>
+          <button class="btn-secondary btn-small" onclick="resetMonth()">重置本月</button>
+        </div>
       </div>
     </div>
 
-    <!-- 10分鐘四寶計時器 -->
+    <!-- 2. 黃金四寶計時器 -->
     <div class="card timer-box">
+      <div class="mode-switch">
+        <button class="mode-btn active" id="modeFull" onclick="setMode('full')">🔥 完整 10 關</button>
+        <button class="mode-btn" id="modeLazy" onclick="setMode('lazy')">🦥 累死保底 4 關</button>
+      </div>
       <div class="phase-label" id="phaseLabel">準備開始</div>
       <div class="exercise-name" id="exerciseName">徒手深蹲</div>
       <div class="time-display" id="timeDisplay">00:40</div>
-      <div class="round-info" id="roundInfo">進度：第 1 / 10 關（共 10 分鐘）</div>
+      <div class="round-info" id="roundInfo">進度：第 1 / 10 關</div>
+
+      <!-- 休息音樂盒 -->
+      <div class="music-box" id="musicBox">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span>🎵 休息時間 BGM：<strong id="bgmStatus">8-bit 輕快電玩曲</strong></span>
+          <button class="btn-secondary btn-small" id="ytPlayBtn" onclick="openRandomYT()">切 YT 副歌 ▶</button>
+        </div>
+        <div class="yt-container" id="ytContainer"></div>
+      </div>
+
       <div class="btn-row">
         <button class="btn-primary" id="startBtn" onclick="toggleTimer()">開始運動</button>
+        <button class="btn-secondary" onclick="skipStep()">跳過本段</button>
         <button class="btn-secondary" onclick="resetTimer()">重置</button>
+      </div>
+    </div>
+
+    <!-- 3. 打卡紀錄 & 自訂設定 -->
+    <div class="card">
+      <div class="header-row" style="margin-bottom: 0;">
+        <h1>📅 運動打卡紀錄</h1>
+        <button class="btn-secondary btn-small" onclick="toggleSettings()">⚙️ 自訂設定</button>
+      </div>
+      <div class="log-list" id="logList"></div>
+
+      <!-- 自訂設定折疊區 -->
+      <div class="settings-panel" id="settingsPanel">
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); width: 100%; margin: 4px 0;">
+        <div style="display: flex; gap: 10px;">
+          <div class="field-group" style="flex:1;">
+            <label>動作秒數</label>
+            <input type="number" id="cfgWorkSec" min="5" max="300" />
+          </div>
+          <div class="field-group" style="flex:1;">
+            <label>休息秒數</label>
+            <input type="number" id="cfgRestSec" min="5" max="180" />
+          </div>
+          <div class="field-group" style="flex:1;">
+            <label>約會門檻(次)</label>
+            <input type="number" id="cfgTarget" min="1" max="31" />
+          </div>
+        </div>
+        <div class="field-group">
+          <label>自訂動作清單（一行一關，保底模式會抓前 4 行）</label>
+          <textarea id="cfgExercises"></textarea>
+        </div>
+        <div class="field-group">
+          <label>休息隨機 YouTube 歌單（一行一個 YT 網址，可加 &t=60s 指定副歌秒數）</label>
+          <textarea id="cfgYtLinks" style="min-height: 75px;"></textarea>
+        </div>
+        <div class="field-group" style="flex-direction: row; align-items: center; gap: 8px;">
+          <input type="checkbox" id="cfgAutoBgm" style="width: auto;" />
+          <label for="cfgAutoBgm">休息 20 秒時自動播放內建 8-bit 輕快電玩音樂</label>
+        </div>
+        <button class="btn-primary" onclick="saveSettings()">💾 儲存自訂設定</button>
       </div>
     </div>
   </div>
 
   <script>
-    // 10分鐘黃金四寶排程（10關 × 60秒 = 10分鐘）
-    const WORKOUT_PLAN = [
-      "1. 徒手深蹲（大腿/代謝）",
-      "2. 伏地挺身（上胸有肉）",
-      "3. 鳥狗式（腰背支撐）",
-      "4. 死蟲式（收緊小腹）",
-      "5. 徒手深蹲（第2輪）",
-      "6. 伏地挺身（第2輪）",
-      "7. 鳥狗式（第2輪）",
-      "8. 死蟲式（第2輪）",
-      "9. 死蟲式（小腹加強收尾）",
-      "10. 伏地挺身（上胸加強收尾）"
-    ];
+    // 預設設定值
+    const DEFAULT_CONFIG = {
+      workSec: 40,
+      restSec: 20,
+      targetCount: 15,
+      autoBgm: true,
+      exercises: [
+        "1. 徒手深蹲（大腿/代謝）",
+        "2. 伏地挺身（上胸有肉）",
+        "3. 鳥狗式（腰背支撐）",
+        "4. 死蟲式（收緊小腹）",
+        "5. 徒手深蹲（第2輪）",
+        "6. 伏地挺身（第2輪）",
+        "7. 鳥狗式（第2輪）",
+        "8. 死蟲式（第2輪）",
+        "9. 死蟲式（小腹加強收尾）",
+        "10. 伏地挺身（上胸加強收尾）"
+      ],
+      ytLinks: [
+        "https://www.youtube.com/watch?v=x8VYWazR5mE&t=55s",
+        "https://www.youtube.com/watch?v=dlFA0Zq1k2A&t=58s",
+        "https://www.youtube.com/watch?v=7wtfhZwyrcc&t=60s"
+      ]
+    };
 
-    // 集點邏輯
+    let config = JSON.parse(localStorage.getItem('guoguo_cfg')) || DEFAULT_CONFIG;
     let count = parseInt(localStorage.getItem('guoguo_workout_count') || '0', 10);
+    let lifetime = parseInt(localStorage.getItem('guoguo_lifetime') || String(count), 10);
+    let logs = JSON.parse(localStorage.getItem('guoguo_logs') || '[]');
+    let isLazyMode = false;
+
+    // 稱號系統
+    function getRank(total) {
+      if (total >= 60) return "Lv.5 果果專屬挺拔猛男 👑";
+      if (total >= 30) return "Lv.4 上胸有肉進化體 💪";
+      if (total >= 15) return "Lv.3 諾讚認證自律鏟屎官 🐈‍⬛";
+      if (total >= 5)  return "Lv.2 地板四寶初心者 🔥";
+      return "Lv.1 剛離開電腦椅的勇者 🌱";
+    }
+
+    // 渲染愛心與紀錄
     function renderHearts() {
       const grid = document.getElementById('heartsGrid');
       grid.innerHTML = '';
-      for (let i = 1; i <= 15; i++) {
+      for (let i = 1; i <= config.targetCount; i++) {
         const div = document.createElement('div');
         div.className = 'heart-slot' + (i <= count ? ' active' : '');
         div.textContent = i <= count ? '❤️' : '🤍';
-        div.onclick = () => { count = i; saveCount(); };
+        div.onclick = () => { count = i; saveState(); };
         grid.appendChild(div);
       }
-      document.getElementById('countBadge').textContent = `${count} / 15 次`;
-      document.getElementById('unlockBanner').classList.toggle('show', count >= 15);
+      document.getElementById('countBadge').textContent = `${count} / ${config.targetCount} 次`;
+      document.getElementById('rankTitle').textContent = `稱號：${getRank(lifetime)}`;
+      document.getElementById('totalLifetime').textContent = `生涯累計：${lifetime} 次`;
+      document.getElementById('unlockBanner').classList.toggle('show', count >= config.targetCount);
     }
-    function saveCount() {
+
+    function renderLogs() {
+      const list = document.getElementById('logList');
+      if (logs.length === 0) {
+        list.innerHTML = '<div style="text-align:center; padding: 10px;">還沒有打卡紀錄，今晚拿下第一顆愛心吧！</div>';
+        return;
+      }
+      list.innerHTML = logs.map(item => `
+        <div class="log-item">
+          <span>✅ ${item.date}</span>
+          <span style="color: var(--accent);">${item.mode}</span>
+        </div>
+      `).join('');
+    }
+
+    function saveState() {
       localStorage.setItem('guoguo_workout_count', count);
+      localStorage.setItem('guoguo_lifetime', lifetime);
+      localStorage.setItem('guoguo_logs', JSON.stringify(logs));
       renderHearts();
+      renderLogs();
     }
-    function adjustCount(delta) {
-      count = Math.max(0, Math.min(15, count + delta));
-      saveCount();
+
+    function adjustCount(delta, modeLabel = "手動打卡") {
+      count = Math.max(0, count + delta);
+      if (delta > 0) {
+        lifetime += delta;
+        const now = new Date();
+        const days = ['日','一','二','三','四','五','六'];
+        const dateStr = `${now.getMonth()+1}/${now.getDate()} (週${days[now.getDay()]}) ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        logs.unshift({ date: dateStr, mode: modeLabel });
+        if (logs.length > 50) logs.pop();
+      }
+      saveState();
     }
+
     function resetMonth() {
-      if (confirm('確定要清空愛心，開啟新的一個月集點嗎？')) {
+      if (confirm('確定要清空本月愛心，開啟新的一輪約會集點嗎？（生涯累計與紀錄會保留）')) {
         count = 0;
-        saveCount();
+        saveState();
       }
     }
 
-    // 音效產生器（免外部音檔）
+    // --- 音效與 8-bit 休息音樂合成器 ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function beep(freq = 600, duration = 0.15) {
+    let bgmInterval = null;
+
+    function playTone(freq, duration, type = 'sine', vol = 0.25) {
       if (audioCtx.state === 'suspended') audioCtx.resume();
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
+      osc.type = type;
       osc.frequency.value = freq;
+      gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
       osc.connect(gain);
       gain.connect(audioCtx.destination);
       osc.start();
-      gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
       osc.stop(audioCtx.currentTime + duration);
     }
 
-    // 計時器邏輯（40秒運動 / 20秒休息）
+    // 快樂過關音效
+    function playStageClearSound() {
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5 E5 G5 C6
+      notes.forEach((n, idx) => setTimeout(() => playTone(n, 0.25, 'triangle', 0.3), idx * 90));
+    }
+
+    // 全部完成 RPG 勝利號角
+    function playVictoryFanfare() {
+      const melody = [
+        { f: 523.25, d: 0.15, t: 0 },
+        { f: 523.25, d: 0.15, t: 150 },
+        { f: 523.25, d: 0.15, t: 300 },
+        { f: 659.25, d: 0.4,  t: 450 },
+        { f: 587.33, d: 0.2,  t: 850 },
+        { f: 659.25, d: 0.2,  t: 1050 },
+        { f: 783.99, d: 0.6,  t: 1250 }
+      ];
+      melody.forEach(m => setTimeout(() => playTone(m.f, m.d, 'triangle', 0.35), m.t));
+    }
+
+    // 休息 20 秒內建 8-bit 輕快旋律
+    function startRestBgm() {
+      stopRestBgm();
+      if (!config.autoBgm) return;
+      const scale = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50];
+      let beat = 0;
+      bgmInterval = setInterval(() => {
+        const note = scale[(beat * 3 + Math.floor(Math.random() * 2)) % scale.length];
+        playTone(note, 0.22, 'triangle', 0.12);
+        beat++;
+      }, 320);
+    }
+
+    function stopRestBgm() {
+      if (bgmInterval) { clearInterval(bgmInterval); bgmInterval = null; }
+      document.getElementById('ytContainer').innerHTML = '';
+      document.getElementById('ytContainer').classList.remove('show');
+    }
+
+    // 切換嵌入隨機 YouTube 副歌
+    function openRandomYT() {
+      stopRestBgm();
+      if (!config.ytLinks || config.ytLinks.length === 0) return alert('請先在設定裡貼上 YouTube 網址喔！');
+      const rawUrl = config.ytLinks[Math.floor(Math.random() * config.ytLinks.length)];
+      const match = rawUrl.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+      const timeMatch = rawUrl.match(/[?&]t=(\d+)/);
+      const videoId = match ? match[1] : null;
+      const startSec = timeMatch ? timeMatch[1] : 50;
+      if (!videoId) return alert('YouTube 網址格式不正確');
+
+      const box = document.getElementById('ytContainer');
+      box.innerHTML = `<iframe width="100%" height="150" src="https://www.youtube.com/embed/${videoId}?start=${startSec}&autoplay=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+      box.classList.add('show');
+    }
+
+    // --- 計時器核心 ---
     let stepIndex = 0;
     let isWork = true;
-    let timeLeft = 40;
+    let timeLeft = config.workSec;
     let timerId = null;
     let wakeLock = null;
+
+    function getActivePlan() {
+      return isLazyMode ? config.exercises.slice(0, 4) : config.exercises;
+    }
+
+    function setMode(mode) {
+      if (timerId) return alert('請先暫停或重置計時器再切換模式喔！');
+      isLazyMode = (mode === 'lazy');
+      document.getElementById('modeFull').classList.toggle('active', !isLazyMode);
+      document.getElementById('modeLazy').classList.toggle('active', isLazyMode);
+      resetTimer();
+    }
 
     async function requestWakeLock() {
       try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
     }
 
     function updateTimerUI() {
+      const plan = getActivePlan();
       const phaseEl = document.getElementById('phaseLabel');
       const nameEl = document.getElementById('exerciseName');
       const timeEl = document.getElementById('timeDisplay');
       const roundEl = document.getElementById('roundInfo');
+      const musicBox = document.getElementById('musicBox');
 
-      phaseEl.textContent = isWork ? '🔥 動作進行中 (40秒)' : '😮‍💨 休息準備下一招 (20秒)';
+      phaseEl.textContent = isWork ? `🔥 動作進行中 (${config.workSec}秒)` : `😮‍💨 休息喘口氣 (${config.restSec}秒)`;
       phaseEl.className = 'phase-label' + (isWork ? '' : ' rest');
-      nameEl.textContent = isWork ? WORKOUT_PLAN[stepIndex] : `下一招：${WORKOUT_PLAN[stepIndex + 1] || '完成！'}`;
-      timeEl.textContent = `00:${String(timeLeft).padStart(2, '0')}`;
-      roundEl.textContent = `進度：第 ${stepIndex + 1} / ${WORKOUT_PLAN.length} 關`;
+      nameEl.textContent = isWork ? plan[stepIndex] : `下一招：${plan[stepIndex + 1] || '完成！'}`;
+      
+      const mins = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+      const secs = String(timeLeft % 60).padStart(2, '0');
+      timeEl.textContent = `${mins}:${secs}`;
+      roundEl.textContent = `進度：第 ${stepIndex + 1} / ${plan.length} 關`;
+      musicBox.classList.toggle('show', !isWork && timerId !== null);
+    }
+
+    function finishWorkout() {
+      clearInterval(timerId);
+      timerId = null;
+      stopRestBgm();
+      playVictoryFanfare();
+      const label = isLazyMode ? "🦥 4分鐘保底" : "🔥 10分鐘完整";
+      adjustCount(1, label);
+      setTimeout(() => {
+        alert(`🎉 太神啦！完成「${label}」，已自動點亮 1 顆愛心 ❤️`);
+        resetTimer();
+      }, 300);
+    }
+
+    function advancePhase() {
+      const plan = getActivePlan();
+      if (isWork) {
+        if (stepIndex >= plan.length - 1) {
+          finishWorkout();
+          return;
+        }
+        playStageClearSound();
+        isWork = false;
+        timeLeft = config.restSec;
+        startRestBgm();
+      } else {
+        stopRestBgm();
+        playTone(880, 0.25, 'sine', 0.35);
+        isWork = true;
+        stepIndex++;
+        timeLeft = config.workSec;
+      }
+      updateTimerUI();
     }
 
     function toggleTimer() {
@@ -186,52 +458,82 @@
       if (timerId) {
         clearInterval(timerId);
         timerId = null;
+        stopRestBgm();
         btn.textContent = '繼續運動';
       } else {
-        beep(800, 0.2);
+        playTone(800, 0.15);
         requestWakeLock();
+        if (!isWork) startRestBgm();
         btn.textContent = '暫停';
         timerId = setInterval(() => {
           timeLeft--;
-          if (timeLeft <= 3 && timeLeft > 0) beep(500, 0.1);
-          if (timeLeft <= 0) {
-            if (isWork) {
-              if (stepIndex === WORKOUT_PLAN.length - 1) {
-                // 全部完成！自動 +1 顆愛心
-                clearInterval(timerId);
-                timerId = null;
-                beep(1000, 0.5);
-                adjustCount(1);
-                alert('🎉 恭喜完成今天 10 分鐘！已自動幫你集滿 1 顆愛心 ❤️');
-                resetTimer();
-                return;
-              }
-              isWork = false;
-              timeLeft = 20;
-              beep(400, 0.3);
-            } else {
-              isWork = true;
-              stepIndex++;
-              timeLeft = 40;
-              beep(880, 0.3);
-            }
+          // 最後 5 秒倒數提示音（音高逐漸升高）
+          if (timeLeft <= 5 && timeLeft > 0) {
+            playTone(450 + (5 - timeLeft) * 80, 0.12, 'sine', 0.3);
           }
-          updateTimerUI();
+          if (timeLeft <= 0) {
+            advancePhase();
+          } else {
+            updateTimerUI();
+          }
         }, 1000);
       }
+      updateTimerUI();
+    }
+
+    function skipStep() {
+      if (!timerId && stepIndex === 0 && isWork) return;
+      advancePhase();
     }
 
     function resetTimer() {
       clearInterval(timerId);
       timerId = null;
+      stopRestBgm();
       stepIndex = 0;
       isWork = true;
-      timeLeft = 40;
+      timeLeft = config.workSec;
       document.getElementById('startBtn').textContent = '開始運動';
       updateTimerUI();
     }
 
+    // --- 設定面板讀寫 ---
+    function toggleSettings() {
+      const panel = document.getElementById('settingsPanel');
+      panel.classList.toggle('open');
+      if (panel.classList.contains('open')) {
+        document.getElementById('cfgWorkSec').value = config.workSec;
+        document.getElementById('cfgRestSec').value = config.restSec;
+        document.getElementById('cfgTarget').value = config.targetCount;
+        document.getElementById('cfgExercises').value = config.exercises.join('\n');
+        document.getElementById('cfgYtLinks').value = config.ytLinks.join('\n');
+        document.getElementById('cfgAutoBgm').checked = config.autoBgm;
+      }
+    }
+
+    function saveSettings() {
+      const exLines = document.getElementById('cfgExercises').value.split('\n').map(s => s.trim()).filter(Boolean);
+      const ytLines = document.getElementById('cfgYtLinks').value.split('\n').map(s => s.trim()).filter(Boolean);
+      if (exLines.length === 0) return alert('動作清單至少要有一行喔！');
+
+      config = {
+        workSec: Math.max(5, parseInt(document.getElementById('cfgWorkSec').value, 10) || 40),
+        restSec: Math.max(5, parseInt(document.getElementById('cfgRestSec').value, 10) || 20),
+        targetCount: Math.max(1, parseInt(document.getElementById('cfgTarget').value, 10) || 15),
+        autoBgm: document.getElementById('cfgAutoBgm').checked,
+        exercises: exLines,
+        ytLinks: ytLines
+      };
+      localStorage.setItem('guoguo_cfg', JSON.stringify(config));
+      renderHearts();
+      resetTimer();
+      toggleSettings();
+      alert('✅ 設定已儲存並套用！');
+    }
+
+    // 初始化
     renderHearts();
+    renderLogs();
     updateTimerUI();
 
     if ('serviceWorker' in navigator) {
